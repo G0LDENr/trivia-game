@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaUser, FaEnvelope, FaTrophy, FaGamepad, FaChartLine, FaEdit, FaSave, FaTimes, FaArrowLeft, FaCalendarAlt, FaStar } from 'react-icons/fa';
+import { FaUser, FaTrophy, FaGamepad, FaChartLine, FaEdit, FaSave, FaTimes, FaCalendarAlt, FaStar, FaSignOutAlt } from 'react-icons/fa';
 import { UserController } from '../../controllers/userController';
 import '../../css/Perfil/perfil.css';
 
-const Perfil = () => {
+const Perfil = ({ isOpen, onClose, userData }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,33 +13,38 @@ const Perfil = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const cargarPerfil = useCallback(() => {
+  useEffect(() => {
+    if (userData) {
+      setUser(userData);
+      setEditData({
+        name: userData.name || '',
+        email: userData.email || '',
+      });
+      setLoading(false);
+    } else if (isOpen) {
+      cargarPerfil();
+    }
+  }, [userData, isOpen]);
+
+  const cargarPerfil = () => {
     try {
       const usuarioGuardado = localStorage.getItem('usuarioActual');
-      
       if (!usuarioGuardado) {
-        navigate('/login');
         return;
       }
-
       const usuario = JSON.parse(usuarioGuardado);
       setUser(usuario);
       setEditData({
         name: usuario.name || '',
         email: usuario.email || '',
       });
-      
     } catch (err) {
       console.error('Error al cargar perfil:', err);
       setError('Error al cargar los datos del perfil');
     } finally {
       setLoading(false);
     }
-  }, [navigate]);
-
-  useEffect(() => {
-    cargarPerfil();
-  }, [cargarPerfil]);
+  };
 
   const handleEdit = () => {
     setEditing(true);
@@ -107,111 +112,70 @@ const Perfil = () => {
     localStorage.removeItem('usuarioActual');
     localStorage.removeItem('modoJuego');
     navigate('/');
+    if (onClose) onClose();
   };
 
-  if (loading) {
-    return (
-      <div className="perfil-loading">
-        <div className="spinner"></div>
-        <p>Cargando perfil...</p>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="perfil-loading">
-        <p>No se encontró información del usuario</p>
-        <button onClick={() => navigate('/login')}>Ir a Login</button>
-      </div>
-    );
-  }
-
-  const getRolNombre = (rol) => {
-    switch(rol) {
-      case 0: return 'Super Administrador';
-      case 1: return 'Administrador';
-      case 2: return 'Jugador';
-      case 3: return 'Invitado';
-      default: return 'Usuario';
-    }
-  };
-
-  const getRolClase = (rol) => {
-    switch(rol) {
-      case 0: return 'rol-super-admin';
-      case 1: return 'rol-admin';
-      case 2: return 'rol-jugador';
-      case 3: return 'rol-invitado';
-      default: return 'rol-usuario';
-    }
-  };
+  if (!isOpen) return null;
 
   return (
-    <div className="perfil-container">
-      <button className="btn-volver" onClick={() => navigate('/inicio')}>
-        <FaArrowLeft className="icono-volver" />
-        <span>Volver</span>
-      </button>
-
-      <div className="perfil-card">
-        <div className="perfil-header">
+    <>
+      {/* Overlay oscuro */}
+      <div className={`perfil-overlay ${isOpen ? 'abierto' : ''}`} onClick={onClose}></div>
+      
+      {/* Menú lateral */}
+      <div className={`perfil-menu-lateral ${isOpen ? 'abierto' : ''}`}>
+        <div className="perfil-menu-header">
+          <button className="perfil-menu-cerrar" onClick={onClose}>
+            <FaTimes />
+          </button>
           <div className="perfil-avatar">
             <FaUser />
           </div>
-          <h1 className="perfil-nombre">{user?.name || 'Usuario'}</h1>
-          <span className={`perfil-rol ${getRolClase(user?.rol)}`}>
-            {getRolNombre(user?.rol)}
-          </span>
+          {!editing ? (
+            <h3 className="perfil-nombre">{user?.name || 'Usuario'}</h3>
+          ) : (
+            <input
+              type="text"
+              name="name"
+              className="perfil-input-nombre"
+              value={editData.name}
+              onChange={handleChange}
+              placeholder="Tu nombre"
+            />
+          )}
+          {/* Email debajo del nombre */}
+          {!editing ? (
+            <p className="perfil-email">{user?.email}</p>
+          ) : (
+            <input
+              type="email"
+              name="email"
+              className="perfil-input-email"
+              value={editData.email}
+              onChange={handleChange}
+              placeholder="tu@email.com"
+            />
+          )}
+          {/* Quitamos el span del rol (lo de "Jugador") */}
         </div>
 
         {error && <div className="perfil-error">{error}</div>}
         {success && <div className="perfil-success">{success}</div>}
 
-        <div className="perfil-body">
+        <div className="perfil-menu-body">
           {!editing ? (
             <div className="perfil-info">
-              <div className="info-grupo">
-                <label>Correo electrónico</label>
-                <p><FaEnvelope className="info-icon" /> {user?.email}</p>
-              </div>
-
               <div className="info-grupo">
                 <label>Miembro desde</label>
                 <p><FaCalendarAlt className="info-icon" /> {user?.created_at ? new Date(user.created_at).toLocaleDateString('es-ES') : 'Fecha no disponible'}</p>
               </div>
-
-              <button className="btn-editar" onClick={handleEdit}>
-                <FaEdit /> Editar perfil
-              </button>
             </div>
           ) : (
             <div className="perfil-editar">
-              <div className="input-grupo">
-                <label>Nombre completo</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={editData.name}
-                  onChange={handleChange}
-                  placeholder="Tu nombre"
-                />
-              </div>
-
-              <div className="input-grupo">
-                <label>Correo electrónico</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={editData.email}
-                  onChange={handleChange}
-                  placeholder="tu@email.com"
-                />
-              </div>
-
+              {/* Los campos de edición ya están en el header */}
               <div className="perfil-buttons">
                 <button className="btn-guardar" onClick={handleSave} disabled={loading}>
-                  <FaSave /> {loading ? 'Guardando...' : 'Guardar cambios'}
+                  <FaSave /> {loading ? 'Guardando...' : 'Guardar'}
                 </button>
                 <button className="btn-cancelar" onClick={handleCancel}>
                   <FaTimes /> Cancelar
@@ -223,8 +187,7 @@ const Perfil = () => {
 
         {/* Sección de estadísticas */}
         <div className="perfil-estadisticas">
-          <h3><FaChartLine /> Estadísticas de juego</h3>
-          
+          <h4><FaChartLine /> Estadísticas</h4>
           <div className="stats-grid">
             <div className="stat-card">
               <FaStar className="stat-icon" />
@@ -233,25 +196,21 @@ const Perfil = () => {
                 <span className="stat-label">Puntaje total</span>
               </div>
             </div>
-            
             <div className="stat-card">
               <FaGamepad className="stat-icon" />
               <div className="stat-info">
                 <span className="stat-valor">{user?.partidas_jugadas || 0}</span>
-                <span className="stat-label">Partidas jugadas</span>
+                <span className="stat-label">Partidas</span>
               </div>
             </div>
-            
             <div className="stat-card">
               <FaTrophy className="stat-icon" />
               <div className="stat-info">
                 <span className="stat-valor">{user?.partidas_ganadas || 0}</span>
-                <span className="stat-label">Partidas ganadas</span>
+                <span className="stat-label">Ganadas</span>
               </div>
             </div>
           </div>
-
-          {/* Porcentaje de victorias */}
           {user?.partidas_jugadas > 0 && (
             <div className="stats-detalles">
               <div className="detalle-item">
@@ -262,13 +221,18 @@ const Perfil = () => {
           )}
         </div>
 
-        <div className="perfil-footer">
+        <div className="perfil-menu-footer">
+          {!editing && (
+            <button className="btn-editar-perfil" onClick={handleEdit}>
+              <FaEdit /> Editar perfil
+            </button>
+          )}
           <button className="btn-cerrar-sesion" onClick={handleLogout}>
-            Cerrar sesión
+            <FaSignOutAlt /> Cerrar sesión
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

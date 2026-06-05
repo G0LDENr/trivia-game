@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaUser, FaUsers, FaUserCircle, FaCog } from "react-icons/fa";
+import Perfil from '../Perfil/perfil';
 import "../../css/Inicio/inicio.css";
 import logo from "../../img/Logo.png";
 import copaLogo from "../../img/Copa.png";
@@ -8,13 +9,28 @@ import estadisticasLogo from "../../img/estadisticas.png";
 
 const Inicio = () => {
   const navigate = useNavigate();
+  const [menuPerfilAbierto, setMenuPerfilAbierto] = useState(false);
+  const [usuarioActual, setUsuarioActual] = useState(null);
+
+  useEffect(() => {
+    const usuario = localStorage.getItem('usuarioActual');
+    if (usuario) {
+      setUsuarioActual(JSON.parse(usuario));
+    } else {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   const handleJugarClick = () => {
     navigate('/juego');
   };
 
   const handlePerfilClick = () => {
-    navigate('/perfil');
+    setMenuPerfilAbierto(true);
+  };
+
+  const handleCerrarMenu = () => {
+    setMenuPerfilAbierto(false);
   };
 
   const handleConfiguracionClick = () => {
@@ -23,6 +39,13 @@ const Inicio = () => {
 
   return (
     <div className="inicio-container">
+      {/* Menú de perfil desplegable (es el mismo Perfil.jsx) */}
+      <Perfil 
+        isOpen={menuPerfilAbierto} 
+        onClose={handleCerrarMenu} 
+        userData={usuarioActual}
+      />
+
       {/* Botón Perfil - IZQUIERDA */}
       <div className="boton-perfil" onClick={handlePerfilClick} style={{ cursor: 'pointer' }}>
         <div className="circulo-boton">
@@ -39,19 +62,17 @@ const Inicio = () => {
         <span className="texto-boton">Configuración</span>
       </div>
 
-      {/* Logo superior */}
+      {/* Resto del contenido igual... */}
       <div className="logo-superior">
         <img src={logo} alt="Logo" />
       </div>
 
-      {/* Resto del contenido igual... */}
       <h1 className="inicio-title">TRIVIA</h1>
 
       <p className="inicio-description">
         Pon a prueba tus conocimientos y diviértete
       </p>
 
-      {/* Cuadro JUGAR */}
       <div className="cuadro-grande" onClick={handleJugarClick} style={{ cursor: 'pointer' }}>
         <div className="copa-izquierda">
           <div className="circulo-blanco">
