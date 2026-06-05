@@ -1,0 +1,834 @@
+/* Contenedor principal del juego */
+.juego-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+}
+
+/* Fondo para el juego igual que inicio */
+@media (min-width: 768px) {
+  .juego-container {
+    background-image: url('../../img/Fondo.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+}
+
+@media (max-width: 767px) {
+  .juego-container {
+    background-image: url('../../img/Fondo-movil.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
+
+/* ============================================ */
+/* BOTÓN DE REGRESO - SOLO FLECHA (SOLO EN JUEGO) */
+/* ============================================ */
+
+.boton-regreso {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  z-index: 10;
+}
+
+.boton-regreso:hover {
+  transform: translateX(-3px);
+}
+
+.icono-flecha {
+  font-size: 2rem;
+  color: #1da74a;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  padding: 10px;
+  width: 45px;
+  height: 45px;
+  transition: all 0.3s ease;
+}
+
+.icono-flecha:hover {
+  background: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+
+/* ============================================ */
+/* BOTÓN CONFIGURACIÓN - SOLO ENGRANAJE */
+/* ============================================ */
+
+.boton-configuracion {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  z-index: 10;
+}
+
+.boton-configuracion:hover {
+  transform: rotate(90deg);
+}
+
+.icono-engranaje {
+  font-size: 2rem;
+  color: #ffffff;
+  border-radius: 50%;
+  padding: 10px;
+  width: 45px;
+  height: 45px;
+  transition: all 0.3s ease;
+}
+
+.icono-engranaje:hover {
+  background: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05) rotate(90deg);
+}
+
+/* Barra de progreso - ARRIBA DEL TODO */
+.progreso-container {
+  width: 93%;
+  max-width: 800px;
+  margin: 0 auto 1rem auto;
+  position: relative;
+  z-index: 1;
+}
+
+.progreso-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.pregunta-label {
+  color: #1da74a;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.preguntas-restantes {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.barra-progreso {
+  width: 100%;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.barra-progreso-lleno {
+  height: 100%;
+  background: linear-gradient(90deg, #1da74a, #58bc74);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+/* Logo superior - con márgenes ajustados */
+.logo-superior {
+  margin-bottom: 1rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  animation: moverLogo 2s ease-in-out infinite;
+  margin-top: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.logo-superior img {
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+}
+
+/* Título */
+.inicio-title {
+  font-size: 5rem;
+  font-weight: 1000;
+  color: #16a34a;
+  letter-spacing: 0.025em;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Cuadro de pregunta */
+.pregunta-cuadro {
+  background: white;
+  border-radius: 20px;
+  padding: 2rem;
+  max-width: 800px;
+  width: 90%;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.pregunta-texto {
+  font-size: 1.8rem;
+  color: #333;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Contenedor de respuestas */
+.respuestas-container {
+  max-width: 800px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Botones de respuesta */
+.respuesta-boton {
+  background: white;
+  border: 1px solid #1c68f1;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  text-align: left;
+  font-size: 1rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-weight: 500;
+}
+
+.respuesta-letra {
+  font-weight: bold;
+  color: #1a66f3;
+  font-size: 1.2rem;
+  min-width: 30px;
+  transition: color 0.3s ease;
+}
+
+.respuesta-boton:hover:not(:disabled) {
+  transform: translateX(5px);
+  border-color: #1da74a;
+  background: #f0fdf4;
+}
+
+.respuesta-boton:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Respuesta correcta - SOLO FONDO VERDE */
+.respuesta-correcta {
+  background: #d4edda !important;
+  border-color: #28a745 !important;
+  animation: correctAnswer 0.5s ease;
+}
+
+/* Respuesta incorrecta seleccionada - SOLO FONDO ROJO */
+.respuesta-incorrecta {
+  background: #f8d7da !important;
+  border-color: #dc3545 !important;
+}
+
+/* Las letras SIEMPRE se mantienen azules */
+.respuesta-correcta .respuesta-letra,
+.respuesta-incorrecta .respuesta-letra {
+  color: #1a66f3 !important;
+}
+
+/* El texto SIEMPRE se mantiene normal */
+.respuesta-correcta,
+.respuesta-incorrecta {
+  color: #333 !important;
+}
+
+/* Contenedor de acciones */
+.acciones-container {
+  max-width: 800px;
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 1rem;
+}
+
+/* Botón pista */
+.boton-pista {
+  background: #1c68f1;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.boton-pista:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(28, 104, 241, 0.3);
+}
+
+.icono-pista {
+  font-size: 1.2rem;
+}
+
+/* Botón siguiente */
+.boton-siguiente {
+  background: #1fa74d;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.boton-siguiente:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(31, 167, 77, 0.3);
+}
+
+.icono-siguiente {
+  font-size: 1rem;
+}
+
+/* Panel de pista */
+.pista-panel {
+  max-width: 800px;
+  width: 100%;
+  background: linear-gradient(135deg, #fef3c7, #fffbeb);
+  border-left: 4px solid #f59e0b;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-top: 1rem;
+  animation: slideDown 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.pista-texto {
+  color: #92400e;
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* ============================================ */
+/* RESULTADOS - DISEÑO CON CÍRCULO SVG */
+/* ============================================ */
+
+.resultados-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 550px;
+  animation: slideUp 0.5s ease;
+  z-index: 20;
+  margin-top: -4rem;
+}
+
+.resultados-titulo {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1da74a;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  letter-spacing: 2px;
+}
+
+.resultados-mensaje {
+  font-size: 1.2rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.resultados-cuadro-blanco {
+  background: white;
+  border-radius: 30px;
+  padding: 1.5rem 2rem;
+  width: 80%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.puntaje-titulo {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+/* Círculo de progreso con SVG */
+.circulo-progreso-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 1rem;
+}
+
+.circulo-progreso-svg {
+  width: 320px;
+  height: 320px;
+}
+
+.circulo-bg {
+  stroke: #e0e0e0;
+  stroke-width: 10;
+}
+
+.circulo-verde {
+  stroke: #1da74a;
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s ease;
+}
+
+.circulo-texto-grande {
+  font-size: 3rem;
+  font-weight: bold;
+  fill: #1da74a;
+  dominant-baseline: middle;
+}
+
+.circulo-texto-pequeno {
+  font-size: 1rem;
+  fill: #000000;
+  dominant-baseline: middle;
+}
+
+.linea-divisora {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+  margin: 1rem 0;
+}
+
+.iconos-estadisticas {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.icono-item {
+  flex: 1;
+  text-align: center;
+}
+
+.icono-circulo-verde {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #d4edda;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.5rem;
+}
+
+.icono-palomita {
+  font-size: 1.5rem;
+  color: #28a745;
+}
+
+.icono-circulo-rojo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #f8d7da;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.5rem;
+}
+
+.icono-tache {
+  font-size: 1.5rem;
+  color: #dc3545;
+}
+
+.icono-circulo-azul {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #e3f4e7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 0.5rem;
+}
+
+.icono-copa {
+  font-size: 1.5rem;
+  color: #1da74a;
+}
+
+.icono-numero {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #1da74a;
+  margin: 0.3rem 0;
+}
+
+.icono-label {
+  font-size: 0.7rem;
+  color: #666;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.botones-resultados {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 91%;
+  margin-top: 1.5rem;
+}
+
+.btn-intentar {
+  background: linear-gradient(135deg, #1da74a, #15803d);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.btn-intentar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(29, 167, 74, 0.3);
+}
+
+.btn-volver {
+  background: white;
+  color: #1a66f3;
+  border: 2px solid #1a66f3;
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.btn-volver:hover {
+  background: #f0fdf4;
+  transform: translateY(-2px);
+}
+
+/* Animaciones */
+@keyframes moverLogo {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes correctAnswer {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive para tablets */
+@media (max-width: 768px) {
+  .inicio-title {
+    font-size: 3.5rem;
+  }
+  
+  .pregunta-texto {
+    font-size: 1.4rem;
+  }
+  
+  .respuestas-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .respuesta-boton {
+    padding: 0.8rem 1rem;
+  }
+  
+  .boton-pista,
+  .boton-siguiente {
+    padding: 0.6rem 1.5rem;
+  }
+  
+  .icono-flecha,
+  .icono-engranaje {
+    font-size: 1.5rem;
+    width: 38px;
+    height: 38px;
+    padding: 8px;
+  }
+  
+  .boton-regreso {
+    top: 15px;
+    left: 15px;
+  }
+  
+  .boton-configuracion {
+    top: 15px;
+    right: 15px;
+  }
+  
+  .resultados-titulo {
+    font-size: 2rem;
+  }
+  
+  .circulo-progreso-svg {
+    width: 190px;
+    height: 190px;
+  }
+  
+  .circulo-texto-grande {
+    font-size: 2.5rem;
+  }
+  
+  .circulo-texto-pequeno {
+    font-size: 0.9rem;
+  }
+}
+
+/* Responsive para móviles */
+@media (max-width: 550px) {
+  .juego-container {
+    padding: 1rem;
+  }
+  
+  .inicio-title {
+    font-size: 4rem;
+  }
+  
+  .pregunta-cuadro {
+    padding: 1.5rem;
+  }
+  
+  .pregunta-texto {
+    font-size: 1.2rem;
+  }
+  
+  .respuesta-boton {
+    font-size: 0.9rem;
+    padding: 0.7rem 1rem;
+  }
+  
+  .respuesta-letra {
+    font-size: 1rem;
+  }
+  
+  .icono-flecha,
+  .icono-engranaje {
+    font-size: 1.3rem;
+    width: 35px;
+    height: 35px;
+    padding: 7px;
+  }
+  
+  .boton-regreso {
+    top: 10px;
+    left: 10px;
+  }
+  
+  .boton-configuracion {
+    top: 10px;
+    right: 10px;
+  }
+  
+  .resultados-container {
+    margin-top: -6rem;
+  }
+  
+  .resultados-titulo {
+    font-size: 3rem;
+  }
+  
+  .resultados-mensaje {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .resultados-cuadro-blanco {
+    padding: 1rem 1.5rem;
+  }
+  
+  .puntaje-titulo {
+    font-size: 1.2rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .circulo-progreso-svg {
+    width: 170px;
+    height: 170px;
+  }
+  
+  .circulo-texto-grande {
+    font-size: 3rem;
+  }
+  
+  .circulo-texto-pequeno {
+    font-size: 1.5rem;
+  }
+  
+  .icono-circulo-verde,
+  .icono-circulo-rojo,
+  .icono-circulo-azul {
+    width: 55px;
+    height: 55px;
+  }
+  
+  .icono-palomita,
+  .icono-tache,
+  .icono-copa {
+    font-size: 1.2rem;
+  }
+  
+  .icono-numero {
+    font-size: 2rem;
+  }
+  
+  .icono-label {
+    font-size: 0.7rem;
+  }
+  
+  .botones-resultados {
+    margin-top: 1rem;
+  }
+}
+
+/* Responsive para móviles muy pequeños */
+@media (max-width: 420px) {
+  .inicio-title {
+    font-size: 3rem;
+  }
+  
+  .pregunta-texto {
+    font-size: 1rem;
+  }
+  
+  .respuesta-boton {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.8rem;
+  }
+  
+  .respuesta-letra {
+    font-size: 0.9rem;
+    min-width: 25px;
+  }
+  
+  .boton-pista,
+  .boton-siguiente {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .icono-flecha,
+  .icono-engranaje {
+    font-size: 1.1rem;
+    width: 30px;
+    height: 30px;
+    padding: 6px;
+  }
+  
+  .resultados-container {
+    margin-top: -7rem;
+  }
+  
+  .resultados-titulo {
+    font-size: 1.5rem;
+  }
+  
+  .iconos-estadisticas {
+    gap: 0.5rem;
+  }
+  
+  .circulo-progreso-svg {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .circulo-texto-grande {
+    font-size: 1.8rem;
+  }
+  
+  .circulo-texto-pequeno {
+    font-size: 0.7rem;
+  }
+  
+  .linea-divisora {
+    margin: 0.8rem 0;
+  }
+}

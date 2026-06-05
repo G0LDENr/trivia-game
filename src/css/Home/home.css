@@ -1,0 +1,495 @@
+.trivia-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  position: relative;
+}
+
+/* Imagen de fondo para dispositivos grandes (laptops, tablets, desktop) */
+@media (min-width: 768px) {
+  .trivia-container {
+    background-image: url('../../img/Fondo.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+}
+
+/* Imagen de fondo para dispositivos pequeños (móviles) - USA OTRA IMAGEN */
+@media (max-width: 767px) {
+  .trivia-container {
+    background-image: url('../../img/Fondo-movil.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+  }
+}
+
+/* Opcional: Overlay para que el texto se lea mejor */
+.trivia-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+/* Asegura que todo el contenido esté por encima del overlay */
+.logo-container,
+.trivia-title,
+.trivia-message,
+.botones-container {
+  position: relative;
+  z-index: 1;
+}
+
+/* Contenedor del logo */
+.logo-container {
+  margin-bottom: 1.5rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: moverLogo 2s ease-in-out infinite;
+}
+
+/* La imagen del logo será responsiva */
+.logo-container img {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  display: block;
+}
+
+/* Keyframes para la animación del logo */
+@keyframes moverLogo {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.trivia-title {
+  font-size: 5rem;
+  font-weight: 700;
+  color: #16a34a;
+  letter-spacing: 0.025em;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.trivia-message {
+  color: #000000;
+  font-size: 1.25rem;
+  text-align: center;
+  margin-bottom: 3rem;
+  max-width: 90%;
+}
+
+/* Contenedor de botones */
+.botones-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 300px;
+}
+
+/* Botón Jugar como Invitado */
+.play-button {
+  background-color: #16a34a;
+  color: white;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+}
+
+.play-button:hover {
+  background-color: #15803d;
+  transform: scale(1.05);
+}
+
+.play-icon {
+  font-size: 1.2rem;
+}
+
+/* Botón Registrarse */
+.registro-button {
+  background-color: transparent;
+  color: #16a34a;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid #16a34a;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.registro-button:hover {
+  background-color: #16a34a;
+  color: white;
+  transform: scale(1.05);
+}
+
+.registro-icon {
+  font-size: 1.2rem;
+}
+
+/* ============================================ */
+/* MODAL */
+/* ============================================ */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: white;
+  border-radius: 30px;
+  max-width: 400px;
+  width: 90%;
+  padding: 2rem;
+  position: relative;
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-cerrar {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.3s ease;
+}
+
+.modal-cerrar:hover {
+  color: #333;
+}
+
+.modal-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.modal-icono {
+  font-size: 3rem;
+  color: #16a34a;
+  margin-bottom: 0.5rem;
+}
+
+.modal-header h2 {
+  font-size: 1.5rem;
+  color: #333;
+  margin: 0;
+}
+
+.modal-body {
+  text-align: center;
+}
+
+.modal-body p {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+.modal-input:focus {
+  outline: none;
+  border-color: #16a34a;
+}
+
+.modal-boton-continuar {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.modal-boton-continuar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+}
+
+/* Agrega estos estilos a tu home.css existente */
+
+.login-button {
+  background-color: transparent;
+  color: #16a34a;
+  font-weight: 600;
+  padding: 1rem 2rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: 1rem;
+  border: 2px solid #16a34a;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #16a34a;
+  color: white;
+  transform: scale(1.05);
+}
+
+.login-icon {
+  font-size: 1.2rem;
+}
+
+/* Ajusta el orden de los botones */
+.botones-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 300px;
+}
+
+/* Responsive para tablets */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .trivia-title {
+    font-size: 5.5rem;
+  }
+  
+  .trivia-message {
+    font-size: 1.75rem;
+  }
+  
+  .play-button,
+  .registro-button {
+    font-size: 1.2rem;
+    padding: 1.2rem 2rem;
+  }
+  
+  .logo-container img {
+    max-width: 350px;
+  }
+  
+  .botones-container {
+    max-width: 350px;
+  }
+}
+
+/* Móviles grandes (640px - 767px) */
+@media (max-width: 767px) {
+  .trivia-title {
+    font-size: 4rem;
+  }
+  
+  .trivia-message {
+    font-size: 1.2rem;
+    margin-bottom: 2.5rem;
+  }
+  
+  .play-button,
+  .registro-button {
+    padding: 0.9rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .logo-container img {
+    max-width: 250px;
+  }
+  
+  .modal-content {
+    padding: 1.5rem;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.3rem;
+  }
+}
+
+/* Móviles pequeños (menos de 480px) */
+@media (max-width: 480px) {
+  .trivia-title {
+    font-size: 3rem;
+  }
+  
+  .trivia-message {
+    font-size: 1rem;
+    margin-bottom: 2rem;
+  }
+  
+  .play-button,
+  .registro-button {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.85rem;
+  }
+  
+  .play-icon,
+  .registro-icon {
+    font-size: 1rem;
+  }
+  
+  .logo-container img {
+    max-width: 200px;
+  }
+  
+  .modal-header h2 {
+    font-size: 1.1rem;
+  }
+  
+  .modal-body p {
+    font-size: 0.8rem;
+  }
+  
+  .modal-input {
+    padding: 0.7rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Móviles muy pequeños (menos de 360px) */
+@media (max-width: 360px) {
+  .trivia-title {
+    font-size: 2.5rem;
+  }
+  
+  .trivia-message {
+    font-size: 0.9rem;
+  }
+  
+  .play-button,
+  .registro-button {
+    padding: 0.7rem 1rem;
+    font-size: 0.8rem;
+  }
+  
+  .logo-container img {
+    max-width: 180px;
+  }
+}
+
+/* Laptops grandes y desktop */
+@media (min-width: 1025px) {
+  .trivia-title {
+    font-size: 6rem;
+  }
+  
+  .trivia-message {
+    font-size: 1.5rem;
+  }
+  
+  .play-button,
+  .registro-button {
+    font-size: 1.2rem;
+    padding: 1.2rem 2.5rem;
+  }
+  
+  .logo-container img {
+    max-width: 400px;
+  }
+  
+  .botones-container {
+    max-width: 400px;
+  }
+}
+
+/* Pantallas muy grandes (4K, etc.) */
+@media (min-width: 1920px) {
+  .trivia-title {
+    font-size: 8rem;
+  }
+  
+  .trivia-message {
+    font-size: 2rem;
+  }
+  
+  .play-button,
+  .registro-button {
+    font-size: 1.5rem;
+    padding: 1.5rem 3rem;
+  }
+  
+  .logo-container img {
+    max-width: 500px;
+  }
+  
+  .botones-container {
+    max-width: 500px;
+  }
+}

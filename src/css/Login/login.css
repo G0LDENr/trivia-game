@@ -1,0 +1,267 @@
+/* Contenedor principal */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+}
+
+/* Fondo para dispositivos grandes */
+@media (min-width: 768px) {
+  .login-container {
+    background-image: url('../../img/Fondo.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+}
+
+/* Fondo para móviles */
+@media (max-width: 767px) {
+  .login-container {
+    background-image: url('../../img/Fondo-movil.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
+
+/* Botón volver */
+.btn-volver {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.btn-volver:hover {
+  background: white;
+  transform: translateX(-3px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.icono-volver {
+  font-size: 1.5rem;
+  color: #1da74a;
+}
+
+/* Logo */
+.logo-container {
+  margin-bottom: 2rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  animation: moverLogo 2s ease-in-out infinite;
+}
+
+.logo-container img {
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+}
+
+@keyframes moverLogo {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+/* Título */
+.login-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #16a34a;
+  text-align: center;
+  margin-bottom: 2rem;
+  letter-spacing: 2px;
+}
+
+/* Formulario */
+.login-form {
+  background: white;
+  border-radius: 30px;
+  padding: 2rem;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+/* Grupos de input */
+.input-group {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  font-size: 1rem;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.8rem 1rem 0.8rem 2.5rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #16a34a;
+}
+
+.btn-mostrar-password {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #999;
+  font-size: 1rem;
+  transition: color 0.3s ease;
+}
+
+.btn-mostrar-password:hover {
+  color: #16a34a;
+}
+
+/* Error */
+.error-mensaje {
+  background: #fee2e2;
+  color: #dc2626;
+  padding: 0.8rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+/* Botón login/registro */
+.btn-login {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+}
+
+/* Enlace de registro/login */
+.registro-link {
+  text-align: center;
+}
+
+.registro-link p {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.registro-link span {
+  color: #16a34a;
+  cursor: pointer;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.registro-link span:hover {
+  color: #15803d;
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 550px) {
+  .login-container {
+    padding: 1rem;
+  }
+  
+  .login-title {
+    font-size: 2rem;
+  }
+  
+  .login-form {
+    padding: 1.5rem;
+  }
+  
+  .input-field {
+    padding: 0.7rem 1rem 0.7rem 2.2rem;
+    font-size: 0.9rem;
+  }
+  
+  .input-icon {
+    font-size: 0.9rem;
+    left: 12px;
+  }
+  
+  .btn-login {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .btn-volver {
+    width: 38px;
+    height: 38px;
+    top: 15px;
+    left: 15px;
+  }
+  
+  .icono-volver {
+    font-size: 1.3rem;
+  }
+  
+  .logo-container img {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 420px) {
+  .login-title {
+    font-size: 1.8rem;
+  }
+  
+  .login-form {
+    padding: 1.2rem;
+  }
+  
+  .input-field {
+    padding: 0.6rem 1rem 0.6rem 2rem;
+    font-size: 0.85rem;
+  }
+}
