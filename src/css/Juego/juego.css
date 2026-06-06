@@ -540,9 +540,7 @@
 }
 
 .btn-volver {
-  background: white;
-  color: #1a66f3;
-  border: 2px solid #1a66f3;
+  color: #ffffff;
   border-radius: 12px;
   padding: 1rem;
   font-size: 1rem;
@@ -553,8 +551,41 @@
 }
 
 .btn-volver:hover {
-  background: #f0fdf4;
   transform: translateY(-2px);
+}
+
+/* ============================================ */
+/* SOBRESCRIBIR ESTILOS DE LOGIN EN EL JUEGO */
+/* ============================================ */
+
+/* Ocultar elementos del login que aparecen en el juego */
+.juego-container .btn-volver,
+.juego-container .icono-volver {
+  display: none ;
+}
+
+.juego-container .boton-regreso:hover {
+  background: rgba(0, 0, 0, 0.7) ;
+  transform: scale(1.05) ;
+}
+
+.juego-container .icono-flecha {
+  font-size: 20px ;
+  color: #1ca649 ;
+  margin: 0 ;
+  padding: 0 ;
+}
+
+/* Eliminar cualquier pseudo-elemento o texto adicional */
+.juego-container .boton-regreso::before,
+.juego-container .boton-regreso::after {
+  display: none ;
+  content: none ;
+}
+
+.juego-container .boton-regreso span,
+.juego-container .boton-regreso p {
+  display: none ;
 }
 
 /* Animaciones */

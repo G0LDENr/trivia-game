@@ -1,7 +1,6 @@
-// src/components/Juego/juego.jsx
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaLightbulb, FaArrowRight, FaArrowLeft } from "react-icons/fa";
+import { FaLightbulb, FaArrowRight, FaArrowLeft, FaCheck, FaTimes, FaTrophy } from "react-icons/fa";
 import { QuestionController } from '../../controllers/preguntasController';
 import "../../css/Inicio/inicio.css";
 import "../../css/Juego/juego.css";
@@ -31,20 +30,31 @@ const Juego = () => {
       const result = await QuestionController.getAllQuestions();
       
       if (result.success && result.data && result.data.length > 0) {
-        // Transformar los datos al formato que usa el componente
-        const preguntasFormateadas = result.data.map(q => {
-          // Ordenar respuestas por el campo 'orden'
-          const respuestasOrdenadas = [...q.respuestas].sort((a, b) => a.orden - b.orden);
+        let preguntasFormateadas = result.data.map(q => {
+          let respuestasArray = q.respuestas.map(r => r.texto);
+          const respuestaCorrectaTexto = q.respuestas.find(r => r.es_correcta === true)?.texto;
+          
+          for (let i = respuestasArray.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [respuestasArray[i], respuestasArray[j]] = [respuestasArray[j], respuestasArray[i]];
+          }
+          
+          const correcta = respuestasArray.findIndex(r => r === respuestaCorrectaTexto);
           
           return {
             id: q.id,
             texto: q.texto,
             pista: q.pista || 'Sin pista disponible',
             nivel: q.nivel,
-            respuestas: respuestasOrdenadas.map(r => r.texto),
-            correcta: respuestasOrdenadas.findIndex(r => r.es_correcta === true)
+            respuestas: respuestasArray,
+            correcta: correcta
           };
         });
+        
+        for (let i = preguntasFormateadas.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [preguntasFormateadas[i], preguntasFormateadas[j]] = [preguntasFormateadas[j], preguntasFormateadas[i]];
+        }
         
         setPreguntas(preguntasFormateadas);
       } else {
@@ -157,27 +167,102 @@ const Juego = () => {
     return "respuesta-boton";
   };
 
+  const respuestasCorrectas = respuestasUsuario.filter(r => r.esCorrecta).length;
+  const respuestasIncorrectas = respuestasUsuario.length - respuestasCorrectas;
+  const porcentaje = Math.round((respuestasCorrectas / preguntas.length) * 100);
+
   const handleReiniciar = () => {
     setPreguntaActual(0);
     setRespuestaSeleccionada(null);
     setMostrarPista(false);
     setRespuestasUsuario([]);
     setMostrarResultados(false);
+    cargarPreguntas();
   };
 
-  // Si quieres mantener la pantalla de resultados, agrégala aquí
   if (mostrarResultados) {
-    const respuestasCorrectas = respuestasUsuario.filter(r => r.esCorrecta).length;
     return (
       <div className="juego-container">
         <div className="boton-regreso" onClick={() => navigate('/inicio')}>
           <FaArrowLeft className="icono-flecha" />
         </div>
+
         <div className="resultados-container">
-          <h1>Resultados</h1>
-          <p>Respuestas correctas: {respuestasCorrectas} de {preguntas.length}</p>
-          <button onClick={handleReiniciar}>Jugar de nuevo</button>
-          <button onClick={() => navigate('/inicio')}>Volver al inicio</button>
+          <h1 className="resultados-titulo">RESULTADO</h1>
+          <p className="resultados-mensaje">¡Bien hecho! Terminaste la trivia.</p>
+          
+          <div className="resultados-cuadro-blanco">
+            <h2 className="puntaje-titulo">TU PUNTAJE</h2>
+            
+            <div className="circulo-progreso-container">
+              <svg className="circulo-progreso-svg" viewBox="0 0 200 200">
+                <circle 
+                  className="circulo-bg"
+                  cx="100" 
+                  cy="100" 
+                  r="90"
+                  fill="none"
+                  stroke="#e0e0e0"
+                  strokeWidth="6"
+                />
+                <circle 
+                  className="circulo-verde"
+                  cx="100" 
+                  cy="100" 
+                  r="90"
+                  fill="none"
+                  stroke="#1da74a"
+                  strokeWidth="6"
+                  strokeDasharray={`${2 * Math.PI * 90}`}
+                  strokeDashoffset={`${2 * Math.PI * 90 * (1 - respuestasCorrectas / preguntas.length)}`}
+                  transform="rotate(-90 100 100)"
+                />
+                <text x="100" y="85" textAnchor="middle" className="circulo-texto-grande">
+                  {respuestasCorrectas}
+                </text>
+                <text x="100" y="115" textAnchor="middle" className="circulo-texto-pequeno">
+                  de {preguntas.length}
+                </text>
+              </svg>
+            </div>
+            
+            <div className="linea-divisora"></div>
+            
+            <div className="iconos-estadisticas">
+              <div className="icono-item">
+                <div className="icono-circulo-verde">
+                  <FaCheck className="icono-palomita" />
+                </div>
+                <div className="icono-numero">{respuestasCorrectas}</div>
+                <div className="icono-label">Correctas</div>
+              </div>
+              
+              <div className="icono-item">
+                <div className="icono-circulo-rojo">
+                  <FaTimes className="icono-tache" />
+                </div>
+                <div className="icono-numero">{respuestasIncorrectas}</div>
+                <div className="icono-label">Incorrectas</div>
+              </div>
+              
+              <div className="icono-item">
+                <div className="icono-circulo-azul">
+                  <FaTrophy className="icono-copa" />
+                </div>
+                <div className="icono-numero">{porcentaje}%</div>
+                <div className="icono-label">Porcentaje</div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="botones-resultados">
+            <button className="btn-intentar" onClick={handleReiniciar}>
+              Intentar de nuevo
+            </button>
+            <button className="btn-volver" onClick={() => navigate('/inicio')}>
+              Volver al inicio
+            </button>
+          </div>
         </div>
       </div>
     );
