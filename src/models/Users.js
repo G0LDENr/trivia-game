@@ -12,13 +12,19 @@ export const UserModel = {
     return data
   },
 
-  // Obtener usuario por ID
-  async getById(id) {
-    const { data, error } = await supabase
+  // Obtener usuario por ID (incluyendo password para verificación)
+  async getById(id, includePassword = false) {
+    let query = supabase
       .from('users')
       .select('id, name, email, rol, puntaje_total, partidas_jugadas, partidas_ganadas, created_at')
-      .eq('id', id)
-      .single()
+    
+    if (includePassword) {
+      query = supabase
+        .from('users')
+        .select('*')
+    }
+    
+    const { data, error } = await query.eq('id', id).single()
     
     if (error) throw error
     return data
@@ -30,12 +36,12 @@ export const UserModel = {
         .from('users')
         .select('*')
         .eq('email', email)
-        .maybeSingle()  // Cambia .single() por .maybeSingle()
+        .maybeSingle()
     
     // maybeSingle() devuelve null si no encuentra, no lanza error
     if (error && error.code !== 'PGRST116') throw error
-    return data  // Será null si el usuario no existe
-    },
+    return data
+  },
 
   // Crear usuario (CON BCRYPT - SIN supabase.auth)
   async create(userData) {
@@ -45,7 +51,7 @@ export const UserModel = {
     const { data, error } = await supabase
       .from('users')
       .insert([{
-        id: crypto.randomUUID(), // Generar UUID manualmente
+        id: crypto.randomUUID(),
         name: userData.name,
         email: userData.email,
         password: hashedPassword,
@@ -64,7 +70,7 @@ export const UserModel = {
   async login(email, password) {
     const user = await this.getByEmail(email)
     
-    if (!user) {  // Ahora user puede ser null
+    if (!user) {
         throw new Error('Usuario no encontrado')
     }
     
@@ -76,15 +82,26 @@ export const UserModel = {
     
     const { password: _, ...userWithoutPassword } = user
     return userWithoutPassword
-    },
+  },
 
-  // Actualizar usuario
+  // NUEVO: Verificar contraseña actual
+  async verifyPassword(email, password) {
+    const user = await this.getByEmail(email)
+    
+    if (!user) {
+      return false
+    }
+    
+    const isValidPassword = await bcrypt.compare(password, user.password)
+    return isValidPassword
+  },
+
+  // Actualizar usuario (actualizado para manejar más campos)
   async update(id, userData) {
     const updateData = {}
     
-    if (userData.name) updateData.name = userData.name
-    if (userData.phone !== undefined) updateData.phone = userData.phone
-    if (userData.age !== undefined) updateData.age = userData.age
+    if (userData.name !== undefined) updateData.name = userData.name
+    if (userData.email !== undefined) updateData.email = userData.email
     if (userData.rol !== undefined) updateData.rol = userData.rol
     
     if (userData.password) {
