@@ -46,6 +46,7 @@
   background: white;
   border-bottom: 1px solid #e0e0e0;
   position: relative;
+  flex-shrink: 0;
 }
 
 .perfil-menu-cerrar {
@@ -61,6 +62,7 @@
   justify-content: center;
   cursor: pointer;
   font-size: 30px;
+  background: transparent;
   transition: all 0.3s ease;
 }
 
@@ -103,100 +105,128 @@
 
 .perfil-input-nombre:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #129d3c;
 }
 
-.perfil-rol {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 15px;
-  font-size: 10px;
-  font-weight: 500;
-  color: white;
-}
-
-.rol-super-admin { background: #ff4757; }
-.rol-admin { background: #ffa502; }
-.rol-jugador { background: #1e90ff; }
-.rol-invitado { background: #a4b0be; }
-
-/* Body - Fondo blanco */
-.perfil-menu-body {
-  padding: 20px;
-  flex: 1;
-  background: white;
-}
-
-.perfil-info, .perfil-editar {
-  width: 100%;
-}
-
-.info-grupo {
-  margin-bottom: 18px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #eee;
-}
-
-.info-grupo label {
-  font-size: 10px;
-  color: #999;
-  text-transform: uppercase;
-  display: block;
-  margin-bottom: 4px;
-  letter-spacing: 0.5px;
-}
-
-.info-grupo p {
-  font-size: 14px;
-  color: #333;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.info-icon {
-  color: #667eea;
-  font-size: 14px;
-}
-
-.input-grupo {
-  margin-bottom: 16px;
-}
-
-.input-grupo label {
-  display: block;
-  font-size: 11px;
+.perfil-email {
+  font-size: 13px;
   color: #666;
-  margin-bottom: 6px;
-  font-weight: 500;
+  margin: 5px 0 0 0;
+  word-break: break-all;
 }
 
-.input-grupo input {
-  width: 100%;
+.perfil-input-email {
+  width: 85%;
+  margin: 8px auto 0;
   padding: 8px 12px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 20px;
   font-size: 13px;
+  text-align: center;
   background: white;
-  transition: all 0.3s ease;
+  color: #333;
 }
 
-.input-grupo input:focus {
+.perfil-input-email:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+  border-color: #129d3c;
 }
 
+/* Mensajes de error y éxito */
+.perfil-error {
+  background: #fee;
+  color: #ff4757;
+  padding: 8px 12px;
+  margin: 10px 15px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.perfil-success {
+  background: #e8f5e9;
+  color: #2ed573;
+  padding: 8px 12px;
+  margin: 10px 15px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+/* Contenedor principal que ocupa todo el espacio */
+.perfil-contenedor-principal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Opciones del menú */
+.perfil-opciones {
+  padding: 20px;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+}
+
+.opcion-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+}
+
+.opcion-item:hover {
+  background: #e8f0fe;
+  transform: translateX(5px);
+}
+
+.opcion-icon {
+  font-size: 24px;
+  color: #129d3c;
+  min-width: 30px;
+}
+
+.opcion-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.opcion-titulo {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.opcion-desc {
+  font-size: 11px;
+  color: #999;
+}
+
+.perfil-editar-opciones {
+  padding: 20px;
+  flex-shrink: 0;
+}
+
+/* Botones de guardar/cancelar */
 .perfil-buttons {
   display: flex;
   gap: 10px;
-  margin-top: 15px;
+  margin-top: 0;
 }
 
 .btn-guardar, .btn-cancelar {
   flex: 1;
-  padding: 8px;
+  padding: 10px;
   border: none;
   border-radius: 8px;
   font-size: 13px;
@@ -206,6 +236,7 @@
   justify-content: center;
   gap: 6px;
   font-weight: 500;
+  transition: all 0.3s ease;
 }
 
 .btn-guardar {
@@ -213,8 +244,14 @@
   color: white;
 }
 
-.btn-guardar:hover {
+.btn-guardar:hover:not(:disabled) {
   background: #26b865;
+  transform: translateY(-1px);
+}
+
+.btn-guardar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .btn-cancelar {
@@ -224,14 +261,21 @@
 
 .btn-cancelar:hover {
   background: #ff5252;
+  transform: translateY(-1px);
 }
 
-/* Estadísticas - Fondo gris claro */
+/* Espaciador que empuja hacia abajo */
+.perfil-spacer {
+  flex: 1;
+}
+
+/* Estadísticas */
 .perfil-estadisticas {
   background: #f8f9fa;
-  margin: 0 15px 15px;
+  margin: 0 15px 10px 15px;
   padding: 12px;
   border-radius: 12px;
+  flex-shrink: 0;
 }
 
 .perfil-estadisticas h4 {
@@ -261,7 +305,7 @@
 
 .stat-icon {
   font-size: 20px;
-  color: #667eea;
+  color: #129d3c;
   margin-bottom: 4px;
 }
 
@@ -294,20 +338,19 @@
   font-size: 11px;
 }
 
-/* Footer - Fondo blanco */
+/* Footer - Botón de cerrar sesión */
 .perfil-menu-footer {
-  padding: 16px 20px;
+  padding: 0 20px 20px 20px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border-top: 1px solid #eee;
   background: white;
-  margin-top: auto;
+  flex-shrink: 0;
 }
 
-.btn-editar-perfil, .btn-cerrar-sesion {
+.btn-cerrar-sesion {
   padding: 10px;
-  border: none;
+  border: 2px solid #ff4757;
   border-radius: 10px;
   font-size: 13px;
   font-weight: 500;
@@ -317,46 +360,14 @@
   justify-content: center;
   gap: 8px;
   transition: all 0.3s ease;
-}
-
-.btn-editar-perfil {
-  background: #f0f0f0;
-  color: #667eea;
-}
-
-.btn-editar-perfil:hover {
-  background: #e8e8e8;
-  transform: translateY(-1px);
-}
-
-.btn-cerrar-sesion {
-  background: #ff4757;
-  color: white;
+  background: transparent;
+  color: #ff4757;
 }
 
 .btn-cerrar-sesion:hover {
-  background: #ff3838;
+  background: #ff4757;
+  color: white;
   transform: translateY(-1px);
-}
-
-.perfil-error {
-  background: #fee;
-  color: #ff4757;
-  padding: 8px 12px;
-  margin: 10px 15px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 11px;
-}
-
-.perfil-success {
-  background: #e8f5e9;
-  color: #2ed573;
-  padding: 8px 12px;
-  margin: 10px 15px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 11px;
 }
 
 /* Scrollbar - Más delgada */
@@ -377,27 +388,46 @@
   background: #aaa;
 }
 
-/* Email debajo del nombre */
-.perfil-email {
-  font-size: 13px;
-  color: #666;
-  margin: 5px 0 0 0;
-  word-break: break-all;
-}
-
-.perfil-input-email {
-  width: 85%;
-  margin: 8px auto 0;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  font-size: 13px;
-  text-align: center;
-  background: white;
-  color: #333;
-}
-
-.perfil-input-email:focus {
-  outline: none;
-  border-color: #667eea;
+/* Responsive */
+@media (max-width: 480px) {
+  .perfil-menu-lateral {
+    width: 280px;
+  }
+  
+  .opcion-item {
+    padding: 10px 12px;
+  }
+  
+  .opcion-icon {
+    font-size: 20px;
+    min-width: 25px;
+  }
+  
+  .opcion-titulo {
+    font-size: 13px;
+  }
+  
+  .opcion-desc {
+    font-size: 10px;
+  }
+  
+  .stats-grid {
+    gap: 6px;
+  }
+  
+  .stat-card {
+    padding: 6px;
+  }
+  
+  .stat-valor {
+    font-size: 14px;
+  }
+  
+  .perfil-estadisticas {
+    margin: 0 15px 8px 15px;
+  }
+  
+  .perfil-menu-footer {
+    padding: 0 20px 16px 20px;
+  }
 }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaUser, FaTrophy, FaGamepad, FaChartLine, FaEdit, FaSave, FaTimes, FaCalendarAlt, FaStar, FaSignOutAlt } from 'react-icons/fa';
+import { FaUser, FaTrophy, FaGamepad, FaChartLine, FaSave, FaTimes, FaStar, FaSignOutAlt, FaCog, FaChartBar, FaUserEdit } from 'react-icons/fa';
 import { UserController } from '../../controllers/userController';
 import '../../css/Perfil/perfil.css';
 
@@ -156,26 +156,43 @@ const Perfil = ({ isOpen, onClose, userData }) => {
               placeholder="tu@email.com"
             />
           )}
-          {/* Quitamos el span del rol (lo de "Jugador") */}
         </div>
 
         {error && <div className="perfil-error">{error}</div>}
         {success && <div className="perfil-success">{success}</div>}
 
-        <div className="perfil-menu-body">
+        <div className="perfil-contenedor-principal">
           {!editing ? (
-            <div className="perfil-info">
-              <div className="info-grupo">
-                <label>Miembro desde</label>
-                <p><FaCalendarAlt className="info-icon" /> {user?.created_at ? new Date(user.created_at).toLocaleDateString('es-ES') : 'Fecha no disponible'}</p>
+            <div className="perfil-opciones">
+              <div className="opcion-item" onClick={handleEdit}>
+                <FaUserEdit className="opcion-icon" />
+                <div className="opcion-info">
+                  <span className="opcion-titulo">Editar perfil</span>
+                  <span className="opcion-desc">Modificar nombre y email</span>
+                </div>
+              </div>
+              
+              <div className="opcion-item">
+                <FaCog className="opcion-icon" />
+                <div className="opcion-info">
+                  <span className="opcion-titulo">Configuración</span>
+                  <span className="opcion-desc">Ajustes de cuenta</span>
+                </div>
+              </div>
+              
+              <div className="opcion-item">
+                <FaChartBar className="opcion-icon" />
+                <div className="opcion-info">
+                  <span className="opcion-titulo">Progreso</span>
+                  <span className="opcion-desc">Ver evolución y logros</span>
+                </div>
               </div>
             </div>
           ) : (
-            <div className="perfil-editar">
-              {/* Los campos de edición ya están en el header */}
+            <div className="perfil-editar-opciones">
               <div className="perfil-buttons">
                 <button className="btn-guardar" onClick={handleSave} disabled={loading}>
-                  <FaSave /> {loading ? 'Guardando...' : 'Guardar'}
+                  <FaSave /> {loading ? 'Guardando...' : 'Guardar cambios'}
                 </button>
                 <button className="btn-cancelar" onClick={handleCancel}>
                   <FaTimes /> Cancelar
@@ -183,53 +200,50 @@ const Perfil = ({ isOpen, onClose, userData }) => {
               </div>
             </div>
           )}
-        </div>
-
-        {/* Sección de estadísticas */}
-        <div className="perfil-estadisticas">
-          <h4><FaChartLine /> Estadísticas</h4>
-          <div className="stats-grid">
-            <div className="stat-card">
-              <FaStar className="stat-icon" />
-              <div className="stat-info">
-                <span className="stat-valor">{user?.puntaje_total || 0}</span>
-                <span className="stat-label">Puntaje total</span>
+          
+          <div className="perfil-spacer"></div>
+          
+          {/* Sección de estadísticas */}
+          <div className="perfil-estadisticas">
+            <h4><FaChartLine /> Estadísticas</h4>
+            <div className="stats-grid">
+              <div className="stat-card">
+                <FaStar className="stat-icon" />
+                <div className="stat-info">
+                  <span className="stat-valor">{user?.puntaje_total || 0}</span>
+                  <span className="stat-label">Puntaje total</span>
+                </div>
+              </div>
+              <div className="stat-card">
+                <FaGamepad className="stat-icon" />
+                <div className="stat-info">
+                  <span className="stat-valor">{user?.partidas_jugadas || 0}</span>
+                  <span className="stat-label">Partidas</span>
+                </div>
+              </div>
+              <div className="stat-card">
+                <FaTrophy className="stat-icon" />
+                <div className="stat-info">
+                  <span className="stat-valor">{user?.partidas_ganadas || 0}</span>
+                  <span className="stat-label">Ganadas</span>
+                </div>
               </div>
             </div>
-            <div className="stat-card">
-              <FaGamepad className="stat-icon" />
-              <div className="stat-info">
-                <span className="stat-valor">{user?.partidas_jugadas || 0}</span>
-                <span className="stat-label">Partidas</span>
+            {user?.partidas_jugadas > 0 && (
+              <div className="stats-detalles">
+                <div className="detalle-item">
+                  <span>🏆 Porcentaje de victorias:</span>
+                  <strong>{Math.round((user.partidas_ganadas / user.partidas_jugadas) * 100)}%</strong>
+                </div>
               </div>
-            </div>
-            <div className="stat-card">
-              <FaTrophy className="stat-icon" />
-              <div className="stat-info">
-                <span className="stat-valor">{user?.partidas_ganadas || 0}</span>
-                <span className="stat-label">Ganadas</span>
-              </div>
-            </div>
+            )}
           </div>
-          {user?.partidas_jugadas > 0 && (
-            <div className="stats-detalles">
-              <div className="detalle-item">
-                <span>🏆 Porcentaje de victorias:</span>
-                <strong>{Math.round((user.partidas_ganadas / user.partidas_jugadas) * 100)}%</strong>
-              </div>
-            </div>
-          )}
-        </div>
 
-        <div className="perfil-menu-footer">
-          {!editing && (
-            <button className="btn-editar-perfil" onClick={handleEdit}>
-              <FaEdit /> Editar perfil
+          <div className="perfil-menu-footer">
+            <button className="btn-cerrar-sesion" onClick={handleLogout}>
+              <FaSignOutAlt /> Cerrar sesión
             </button>
-          )}
-          <button className="btn-cerrar-sesion" onClick={handleLogout}>
-            <FaSignOutAlt /> Cerrar sesión
-          </button>
+          </div>
         </div>
       </div>
     </>

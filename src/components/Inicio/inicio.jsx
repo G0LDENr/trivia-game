@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaUser, FaUsers, FaUserCircle, FaCog } from "react-icons/fa";
+import { FaUser, FaUsers, FaUserCircle } from "react-icons/fa";
 import Perfil from '../Perfil/perfil';
 import "../../css/Inicio/inicio.css";
 import logo from "../../img/Logo.png";
@@ -33,9 +33,10 @@ const Inicio = () => {
     setMenuPerfilAbierto(false);
   };
 
-  const handleConfiguracionClick = () => {
-    navigate('/configuracion');
-  };
+  // Eliminar esta función si no se usa
+  // const handleConfiguracionClick = () => {
+  //   navigate('/configuracion');
+  // };
 
   return (
     <div className="inicio-container">
@@ -52,14 +53,6 @@ const Inicio = () => {
           <FaUserCircle className="icono-boton" />
         </div>
         <span className="texto-boton">Perfil</span>
-      </div>
-
-      {/* Botón Configuración - DERECHA */}
-      <div className="boton-configuracion" onClick={handleConfiguracionClick} style={{ cursor: 'pointer' }}>
-        <div className="circulo-boton">
-          <FaCog className="icono-boton" />
-        </div>
-        <span className="texto-boton">Configuración</span>
       </div>
 
       {/* Resto del contenido igual... */}
