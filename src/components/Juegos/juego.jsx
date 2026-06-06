@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+// src/components/Juego/juego.jsx
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaLightbulb, FaArrowRight, FaArrowLeft, FaCog, FaCheck, FaTimes, FaTrophy } from "react-icons/fa";
+import { FaLightbulb, FaArrowRight, FaArrowLeft } from "react-icons/fa";
+import { QuestionController } from '../../controllers/preguntasController';
 import "../../css/Inicio/inicio.css";
 import "../../css/Juego/juego.css";
 import logo from "../../img/Logo.png";
@@ -8,56 +10,98 @@ import logo from "../../img/Logo.png";
 const Juego = () => {
   const navigate = useNavigate();
   
+  const [preguntas, setPreguntas] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [preguntaActual, setPreguntaActual] = useState(0);
   const [respuestaSeleccionada, setRespuestaSeleccionada] = useState(null);
   const [mostrarPista, setMostrarPista] = useState(false);
   const [respuestasUsuario, setRespuestasUsuario] = useState([]);
   const [mostrarResultados, setMostrarResultados] = useState(false);
-  
-  const preguntas = [
-    {
-      texto: "¿Cuál es la capital de Japón?",
-      respuestas: ["Seúl", "Pekín", "Tokio", "Bangkok"],
-      correcta: 2,
-      pista: "Es una ciudad conocida por su tecnología y cultura pop"
-    },
-    {
-      texto: "¿Quién pintó la Mona Lisa?",
-      respuestas: ["Van Gogh", "Picasso", "Da Vinci", "Rembrandt"],
-      correcta: 2,
-      pista: "Fue un polímata del Renacimiento"
-    },
-    {
-      texto: "¿Cuál es el planeta más grande del sistema solar?",
-      respuestas: ["Marte", "Júpiter", "Saturno", "Neptuno"],
-      correcta: 1,
-      pista: "Es conocido por su Gran Mancha Roja"
-    },
-    {
-      texto: "¿En qué año llegó el hombre a la Luna?",
-      respuestas: ["1967", "1968", "1969", "1970"],
-      correcta: 2,
-      pista: "El Apolo 11 fue la misión"
-    },
-    {
-      texto: "¿Quién escribió 'Cien años de soledad'?",
-      respuestas: ["Mario Vargas Llosa", "Julio Cortázar", "Gabriel García Márquez", "Pablo Neruda"],
-      correcta: 2,
-      pista: "Fue un autor colombiano, premio Nobel"
-    },
-    {
-      texto: "¿Cuál es el océano más grande del mundo?",
-      respuestas: ["Atlántico", "Índico", "Ártico", "Pacífico"],
-      correcta: 3,
-      pista: "Cubre aproximadamente el 30% de la superficie terrestre"
-    },
-    {
-      texto: "¿Qué país tiene la población más grande del mundo?",
-      respuestas: ["India", "Estados Unidos", "Indonesia", "China"],
-      correcta: 0,
-      pista: "Superó a China en 2023"
+
+  useEffect(() => {
+    cargarPreguntas();
+  }, []);
+
+  const cargarPreguntas = async () => {
+    setLoading(true);
+    setError('');
+    
+    try {
+      const result = await QuestionController.getAllQuestions();
+      
+      if (result.success && result.data && result.data.length > 0) {
+        // Transformar los datos al formato que usa el componente
+        const preguntasFormateadas = result.data.map(q => {
+          // Ordenar respuestas por el campo 'orden'
+          const respuestasOrdenadas = [...q.respuestas].sort((a, b) => a.orden - b.orden);
+          
+          return {
+            id: q.id,
+            texto: q.texto,
+            pista: q.pista || 'Sin pista disponible',
+            nivel: q.nivel,
+            respuestas: respuestasOrdenadas.map(r => r.texto),
+            correcta: respuestasOrdenadas.findIndex(r => r.es_correcta === true)
+          };
+        });
+        
+        setPreguntas(preguntasFormateadas);
+      } else {
+        setError('No hay preguntas disponibles en la base de datos');
+      }
+    } catch (error) {
+      console.error('Error al cargar preguntas:', error);
+      setError('Error al cargar las preguntas');
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  if (loading) {
+    return (
+      <div className="juego-container">
+        <div className="boton-regreso" onClick={() => navigate('/inicio')}>
+          <FaArrowLeft className="icono-flecha" />
+        </div>
+        <div className="loading-container" style={{ textAlign: 'center', padding: '50px' }}>
+          <div className="spinner"></div>
+          <p>Cargando preguntas...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="juego-container">
+        <div className="boton-regreso" onClick={() => navigate('/inicio')}>
+          <FaArrowLeft className="icono-flecha" />
+        </div>
+        <div className="error-container" style={{ textAlign: 'center', padding: '50px' }}>
+          <h2>Error</h2>
+          <p>{error}</p>
+          <button onClick={() => window.location.reload()}>Reintentar</button>
+          <button onClick={() => navigate('/inicio')}>Volver al inicio</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (preguntas.length === 0) {
+    return (
+      <div className="juego-container">
+        <div className="boton-regreso" onClick={() => navigate('/inicio')}>
+          <FaArrowLeft className="icono-flecha" />
+        </div>
+        <div className="error-container" style={{ textAlign: 'center', padding: '50px' }}>
+          <h2>No hay preguntas</h2>
+          <p>No se encontraron preguntas en la base de datos.</p>
+          <button onClick={() => navigate('/inicio')}>Volver al inicio</button>
+        </div>
+      </div>
+    );
+  }
 
   const preguntasRestantes = preguntas.length - preguntaActual - 1;
   const progreso = ((preguntaActual + 1) / preguntas.length) * 100;
@@ -113,11 +157,6 @@ const Juego = () => {
     return "respuesta-boton";
   };
 
-  const respuestasCorrectas = respuestasUsuario.filter(r => r.esCorrecta).length;
-  const respuestasIncorrectas = respuestasUsuario.length - respuestasCorrectas;
-  const porcentaje = Math.round((respuestasCorrectas / preguntas.length) * 100);
-  // Variable grados eliminada porque no se usa
-
   const handleReiniciar = () => {
     setPreguntaActual(0);
     setRespuestaSeleccionada(null);
@@ -126,93 +165,19 @@ const Juego = () => {
     setMostrarResultados(false);
   };
 
+  // Si quieres mantener la pantalla de resultados, agrégala aquí
   if (mostrarResultados) {
+    const respuestasCorrectas = respuestasUsuario.filter(r => r.esCorrecta).length;
     return (
       <div className="juego-container">
         <div className="boton-regreso" onClick={() => navigate('/inicio')}>
           <FaArrowLeft className="icono-flecha" />
         </div>
-
-        <div className="boton-configuracion" onClick={() => navigate('/configuracion')}>
-          <FaCog className="icono-engranaje" />
-        </div>
-
         <div className="resultados-container">
-          <h1 className="resultados-titulo">RESULTADO</h1>
-          <p className="resultados-mensaje">¡Bien hecho! Terminaste la trivia.</p>
-          
-          <div className="resultados-cuadro-blanco">
-            <h2 className="puntaje-titulo">TU PUNTAJE</h2>
-            
-            <div className="circulo-progreso-container">
-              <svg className="circulo-progreso-svg" viewBox="0 0 200 200">
-                <circle 
-                  className="circulo-bg"
-                  cx="100" 
-                  cy="100" 
-                  r="90"
-                  fill="none"
-                  stroke="#e0e0e0"
-                  strokeWidth="6"
-                />
-                <circle 
-                  className="circulo-verde"
-                  cx="100" 
-                  cy="100" 
-                  r="90"
-                  fill="none"
-                  stroke="#1da74a"
-                  strokeWidth="6"
-                  strokeDasharray={`${2 * Math.PI * 90}`}
-                  strokeDashoffset={`${2 * Math.PI * 90 * (1 - respuestasCorrectas / preguntas.length)}`}
-                  transform="rotate(-90 100 100)"
-                />
-                <text x="100" y="85" textAnchor="middle" className="circulo-texto-grande">
-                  {respuestasCorrectas}
-                </text>
-                <text x="100" y="115" textAnchor="middle" className="circulo-texto-pequeno">
-                  de {preguntas.length}
-                </text>
-              </svg>
-            </div>
-            
-            <div className="linea-divisora"></div>
-            
-            <div className="iconos-estadisticas">
-              <div className="icono-item">
-                <div className="icono-circulo-verde">
-                  <FaCheck className="icono-palomita" />
-                </div>
-                <div className="icono-numero">{respuestasCorrectas}</div>
-                <div className="icono-label">Correctas</div>
-              </div>
-              
-              <div className="icono-item">
-                <div className="icono-circulo-rojo">
-                  <FaTimes className="icono-tache" />
-                </div>
-                <div className="icono-numero">{respuestasIncorrectas}</div>
-                <div className="icono-label">Incorrectas</div>
-              </div>
-              
-              <div className="icono-item">
-                <div className="icono-circulo-azul">
-                  <FaTrophy className="icono-copa" />
-                </div>
-                <div className="icono-numero">{porcentaje}%</div>
-                <div className="icono-label">Porcentaje</div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="botones-resultados">
-            <button className="btn-intentar" onClick={handleReiniciar}>
-              Intentar de nuevo
-            </button>
-            <button className="btn-volver" onClick={() => navigate('/inicio')}>
-              Volver al inicio
-            </button>
-          </div>
+          <h1>Resultados</h1>
+          <p>Respuestas correctas: {respuestasCorrectas} de {preguntas.length}</p>
+          <button onClick={handleReiniciar}>Jugar de nuevo</button>
+          <button onClick={() => navigate('/inicio')}>Volver al inicio</button>
         </div>
       </div>
     );
@@ -222,10 +187,6 @@ const Juego = () => {
     <div className="juego-container">
       <div className="boton-regreso" onClick={() => navigate('/inicio')}>
         <FaArrowLeft className="icono-flecha" />
-      </div>
-
-      <div className="boton-configuracion" onClick={() => navigate('/configuracion')}>
-        <FaCog className="icono-engranaje" />
       </div>
 
       <div className="progreso-container">
