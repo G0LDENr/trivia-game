@@ -517,7 +517,7 @@
   background: white;
   border-radius: 25px;
   padding: 1.5rem 1.5rem;
-  width: 90%;
+  width: 87%;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 
@@ -660,7 +660,7 @@
   margin-top: 5px;
 }
 
-/* Detalle de preguntas */
+/* Detalle de preguntas - HORIZONTAL */
 .detalle-preguntas {
   background: white;
   border-radius: 15px;
@@ -688,12 +688,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 15px;
+  padding: 10px 15px;
   border-radius: 8px;
   background: #f5f5f5;
   transition: all 0.3s ease;
-  gap: 10px;
-  flex-wrap: wrap;
 }
 
 .detalle-correcto {
@@ -708,29 +706,32 @@
 
 .detalle-numero {
   font-weight: bold;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: #333;
-  min-width: 70px;
+  width: 80px;
 }
 
 .detalle-puntaje {
   font-weight: bold;
   color: #1da74a;
-  font-size: 0.85rem;
-  min-width: 60px;
-}
-
-.detalle-velocidad {
-  font-size: 0.8rem;
-  color: #1c68f1;
-  font-weight: 500;
-  min-width: 100px;
-}
-
-.detalle-estado {
   font-size: 0.9rem;
   width: 60px;
   text-align: center;
+}
+
+.detalle-estado {
+  width: 30px;
+  text-align: center;
+}
+
+.icono-palomita-ok {
+  font-size: 1.1rem;
+  color: #1da74a;
+}
+
+.icono-tache-ok {
+  font-size: 1.1rem;
+  color: #f44336;
 }
 
 /* Botones resultados */
@@ -757,65 +758,6 @@
 .btn-intentar:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 15px rgba(29, 167, 74, 0.3);
-}
-
-.btn-volver {
-  background: #ffffff;
-  color: white;
-  border: none;
-  border-radius: 12px;
-  padding: 0.9rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-  display: block;
-  text-align: center;
-}
-
-.btn-volver:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(28, 104, 241, 0.3);
-}
-
-/* Botón volver a inicio con flecha */
-.boton-volver-inicio {
-  background: transparent;
-  border: 2px solid #1c68f1;
-  border-radius: 12px;
-  padding: 0.9rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.8rem;
-  width: 100%;
-  color: #1c68f1;
-}
-
-.boton-volver-inicio:hover {
-  background: #1c68f1;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(28, 104, 241, 0.3);
-}
-
-.boton-volver-inicio:hover .icono-flecha-volver {
-  color: white;
-}
-
-.icono-flecha-volver {
-  font-size: 1rem;
-  color: #1c68f1;
-  transition: transform 0.3s ease;
-}
-
-.boton-volver-inicio:hover .icono-flecha-volver {
-  transform: translateX(-3px);
 }
 
 /* ============================================ */
@@ -973,20 +915,10 @@
     font-size: 2.5rem;
   }
   
-  .detalle-velocidad {
-    min-width: 80px;
-    font-size: 0.7rem;
-  }
-  
-  .detalle-numero {
-    min-width: 60px;
-    font-size: 0.7rem;
-  }
-  
   .juego-solo-container .icono-flecha {
     font-size: 1.5rem;
-    width: 38px;
-    height: 38px;
+    width: 25px;
+    height: 25px;
     padding: 8px;
   }
   
@@ -1051,28 +983,6 @@
     max-height: 200px;
   }
   
-  .detalle-item {
-    flex-direction: column;
-    text-align: center;
-    gap: 5px;
-  }
-  
-  .detalle-velocidad {
-    min-width: auto;
-  }
-  
-  .detalle-numero {
-    min-width: auto;
-  }
-  
-  .detalle-puntaje {
-    min-width: auto;
-  }
-  
-  .detalle-estado {
-    width: auto;
-  }
-  
   .icono-circulo-verde,
   .icono-circulo-rojo,
   .icono-circulo-azul {
@@ -1097,6 +1007,14 @@
   .juego-solo-container .resultados-container {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
+  }
+  
+  .detalle-numero {
+    width: auto;
+  }
+  
+  .detalle-puntaje {
+    width: auto;
   }
 }
 
