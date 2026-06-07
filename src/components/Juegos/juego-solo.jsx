@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaLightbulb, FaArrowRight, FaArrowLeft, FaCheck, FaTimes, FaClock } from "react-icons/fa";
+import { FaLightbulb, FaArrowRight, FaArrowLeft, FaCheck, FaTimes, FaClock, FaInfoCircle } from "react-icons/fa";
 import { QuestionController } from '../../controllers/preguntasController';
 import "../../css/Inicio/inicio.css";
 import "../../css/Juego/juego.css";
@@ -19,6 +19,7 @@ const JuegoSolo = () => {
   const [respuestasUsuario, setRespuestasUsuario] = useState([]);
   const [mostrarResultados, setMostrarResultados] = useState(false);
   const [puntajeTotal, setPuntajeTotal] = useState(0);
+  const [mostrarReglas, setMostrarReglas] = useState(true);
   
   // Estados para el temporizador
   const [tiempoRestante, setTiempoRestante] = useState(30);
@@ -138,7 +139,7 @@ const JuegoSolo = () => {
   useEffect(() => {
     let intervalo;
     
-    if (temporizadorActivo && !mostrarResultados && tiempoRestante > 0 && respuestaSeleccionada === null && !tiempoAgotado) {
+    if (temporizadorActivo && !mostrarResultados && tiempoRestante > 0 && respuestaSeleccionada === null && !tiempoAgotado && !mostrarReglas) {
       intervalo = setInterval(() => {
         setTiempoRestante(prev => {
           if (prev <= 1) {
@@ -154,7 +155,7 @@ const JuegoSolo = () => {
     }
     
     return () => clearInterval(intervalo);
-  }, [temporizadorActivo, mostrarResultados, respuestaSeleccionada, tiempoRestante, tiempoAgotado, manejarTiempoAgotado]);
+  }, [temporizadorActivo, mostrarResultados, respuestaSeleccionada, tiempoRestante, tiempoAgotado, manejarTiempoAgotado, mostrarReglas]);
 
   const calcularPuntaje = (esCorrecta, tiempoUsado, pistaUsada) => {
     if (!esCorrecta) return 0;
@@ -214,7 +215,6 @@ const JuegoSolo = () => {
 
   const handleSiguiente = () => {
     if (respuestaSeleccionada === null && !tiempoAgotado) {
-      alert("Por favor selecciona una respuesta o espera a que termine el tiempo");
       return;
     }
     
@@ -233,7 +233,6 @@ const JuegoSolo = () => {
   const handlePista = () => {
     if (!mostrarPista && respuestaSeleccionada === null && !tiempoAgotado) {
       setMostrarPista(true);
-      alert("💡 Has usado una pista. ¡Se restarán 30 puntos si respondes correctamente!");
     } else {
       setMostrarPista(!mostrarPista);
     }
@@ -269,7 +268,12 @@ const JuegoSolo = () => {
     setTiempoRestante(TIEMPO_LIMITE);
     setTemporizadorActivo(true);
     setTiempoAgotado(false);
+    setMostrarReglas(true);
     cargarPreguntas();
+  };
+
+  const handleCerrarReglas = () => {
+    setMostrarReglas(false);
   };
 
   // Calcular estadísticas
@@ -330,6 +334,52 @@ const JuegoSolo = () => {
   const porcentajeTiempo = (tiempoRestante / TIEMPO_LIMITE) * 100;
   const colorTiempo = tiempoRestante > 15 ? '#1da74a' : (tiempoRestante > 5 ? '#ff9800' : '#f44336');
   const tiempoCritico = tiempoRestante <= 5;
+
+  // Pantalla de reglas
+  if (mostrarReglas) {
+    return (
+      <div className="juego-solo-container">
+        <div className="boton-regreso" onClick={() => navigate('/inicio')}>
+          <FaArrowLeft className="icono-flecha" />
+        </div>
+        <div className="reglas-container">
+          <div className="reglas-cuadro">
+            <FaInfoCircle className="reglas-icono" />
+            <h2 className="reglas-titulo">REGLAS DEL JUEGO</h2>
+            <div className="reglas-lista">
+              <div className="regla-item">
+                <span className="regla-numero">1</span>
+                <p>Tienes <strong>30 segundos</strong> para responder cada pregunta</p>
+              </div>
+              <div className="regla-item">
+                <span className="regla-numero">2</span>
+                <p>Cada respuesta correcta vale <strong>100 puntos</strong></p>
+              </div>
+              <div className="regla-item">
+                <span className="regla-numero">3</span>
+                <p>Respuesta muy rápida (menos de 9 segundos): <strong>+50 puntos</strong></p>
+              </div>
+              <div className="regla-item">
+                <span className="regla-numero">4</span>
+                <p>Respuesta rápida (menos de 18 segundos): <strong>+20 puntos</strong></p>
+              </div>
+              <div className="regla-item">
+                <span className="regla-numero">5</span>
+                <p>Usar pista: <strong>-30 puntos</strong> (solo si respondes correctamente)</p>
+              </div>
+              <div className="regla-item">
+                <span className="regla-numero">6</span>
+                <p>Si el tiempo se agota: <strong>0 puntos</strong></p>
+              </div>
+            </div>
+            <button className="btn-comenzar" onClick={handleCerrarReglas}>
+              ¡COMENZAR!
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Pantalla de resultados
   if (mostrarResultados) {
@@ -423,7 +473,7 @@ const JuegoSolo = () => {
     );
   }
 
-  // Pantalla principal del juego con temporizador (sin puntaje visible)
+  // Pantalla principal del juego con temporizador
   return (
     <div className="juego-solo-container">
       <div className="boton-regreso" onClick={() => navigate('/inicio')}>
@@ -511,7 +561,6 @@ const JuegoSolo = () => {
           <p className="pista-texto">
             <strong>💡 Pista:</strong> {preguntas[preguntaActual].pista}
           </p>
-          <p className="pista-advertencia">⚠️ Usar pista resta 30 puntos si respondes correctamente</p>
         </div>
       )}
     </div>

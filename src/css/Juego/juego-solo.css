@@ -335,13 +335,13 @@
 }
 
 .juego-solo-container .icono-flecha {
-  font-size: 2rem;
+  font-size: 1rem;
   color: #1da74a;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 50%;
   padding: 10px;
-  width: 45px;
-  height: 45px;
+  width: 25px;
+  height: 25px;
   transition: all 0.3s ease;
 }
 
@@ -349,6 +349,100 @@
   background: white;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transform: scale(1.05);
+}
+
+/* ============================================ */
+/* REGLAS DEL JUEGO */
+/* ============================================ */
+
+.reglas-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  padding: 2rem;
+}
+
+.reglas-cuadro {
+  background: white;
+  border-radius: 30px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.5s ease;
+}
+
+.reglas-icono {
+  font-size: 3rem;
+  color: #1c68f1;
+  margin-bottom: 1rem;
+}
+
+.reglas-titulo {
+  font-size: 1.8rem;
+  color: #1da74a;
+  margin-bottom: 1.5rem;
+}
+
+.reglas-lista {
+  text-align: left;
+  margin: 1.5rem 0;
+}
+
+.regla-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 10px;
+  background: #f5f5f5;
+}
+
+.regla-numero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #1c68f1;
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.regla-item p {
+  margin: 0;
+  color: #333;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.regla-item strong {
+  color: #1da74a;
+}
+
+.btn-comenzar {
+  background: linear-gradient(135deg, #1da74a, #15803d);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.btn-comenzar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(29, 167, 74, 0.3);
 }
 
 /* ============================================ */
