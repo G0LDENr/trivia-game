@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaLightbulb, FaArrowRight, FaArrowLeft, FaCheck, FaTimes, FaTrophy } from "react-icons/fa";
 import { QuestionController } from '../../controllers/preguntasController';
@@ -18,11 +18,14 @@ const Juego = () => {
   const [respuestasUsuario, setRespuestasUsuario] = useState([]);
   const [mostrarResultados, setMostrarResultados] = useState(false);
 
-  useEffect(() => {
-    cargarPreguntas();
-  }, []);
+  // IDs de las categorías
+  const CATEGORIAS = {
+    VIDEOJUEGOS: '420fef18-a673-4be3-8169-7bb20efb68a4',
+    AUTOS: '2c783dce-a1f9-49a8-aa4d-bed766ed1928',
+    COMIDA: 'ee7a72b3-bf94-424c-9580-d38db9ba73d3'
+  };
 
-  const cargarPreguntas = async () => {
+  const cargarPreguntas = useCallback(async () => {
     setLoading(true);
     setError('');
     
@@ -30,7 +33,23 @@ const Juego = () => {
       const result = await QuestionController.getAllQuestions();
       
       if (result.success && result.data && result.data.length > 0) {
-        let preguntasFormateadas = result.data.map(q => {
+        
+        const preguntasVideojuegos = result.data.filter(q => q.categoria_id === CATEGORIAS.VIDEOJUEGOS);
+        const preguntasAutos = result.data.filter(q => q.categoria_id === CATEGORIAS.AUTOS);
+        const preguntasComida = result.data.filter(q => q.categoria_id === CATEGORIAS.COMIDA);
+        
+        const seleccionadas = [
+          ...preguntasVideojuegos.slice(0, 10),
+          ...preguntasAutos.slice(0, 10),
+          ...preguntasComida.slice(0, 10)
+        ];
+        
+        for (let i = seleccionadas.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [seleccionadas[i], seleccionadas[j]] = [seleccionadas[j], seleccionadas[i]];
+        }
+        
+        let preguntasFormateadas = seleccionadas.map(q => {
           let respuestasArray = q.respuestas.map(r => r.texto);
           const respuestaCorrectaTexto = q.respuestas.find(r => r.es_correcta === true)?.texto;
           
@@ -46,17 +65,14 @@ const Juego = () => {
             texto: q.texto,
             pista: q.pista || 'Sin pista disponible',
             nivel: q.nivel,
+            categoria_id: q.categoria_id,
             respuestas: respuestasArray,
             correcta: correcta
           };
         });
         
-        for (let i = preguntasFormateadas.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [preguntasFormateadas[i], preguntasFormateadas[j]] = [preguntasFormateadas[j], preguntasFormateadas[i]];
-        }
-        
         setPreguntas(preguntasFormateadas);
+        
       } else {
         setError('No hay preguntas disponibles en la base de datos');
       }
@@ -66,7 +82,11 @@ const Juego = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [CATEGORIAS.VIDEOJUEGOS, CATEGORIAS.AUTOS, CATEGORIAS.COMIDA]);
+
+  useEffect(() => {
+    cargarPreguntas();
+  }, [cargarPreguntas]);
 
   if (loading) {
     return (

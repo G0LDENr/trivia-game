@@ -11,6 +11,28 @@ export const QuestionController = {
         }
     },
 
+    // Nuevo método para obtener preguntas por categoría
+    async getQuestionsByCategory(categoryId) {
+        try {
+            const questions = await QuestionModel.getQuestionsByCategory(categoryId);
+            return { success: true, data: questions };
+        } catch (error) {
+            console.error('Controller Error:', error);
+            return { success: false, error: error.message };
+        }
+    },
+
+    // Nuevo método para obtener preguntas de múltiples categorías
+    async getQuestionsFromCategories(categoryIds, questionsPerCategory = 10) {
+        try {
+            const questions = await QuestionModel.getQuestionsFromCategories(categoryIds, questionsPerCategory);
+            return { success: true, data: questions };
+        } catch (error) {
+            console.error('Controller Error:', error);
+            return { success: false, error: error.message };
+        }
+    },
+
     async getAllCategories() {
         try {
             const categories = await QuestionModel.getAllCategories();
