@@ -25,6 +25,15 @@ const Inicio = () => {
     navigate('/juego');
   };
 
+  const handleJugoSoloClick = () => {
+    navigate('/juego-solo');
+  };
+
+  const handleMultijugadorClick = () => {
+    // Por ahora mostrar alerta, luego se conecta con el multijugador
+    alert('Próximamente disponible');
+  };
+
   const handlePerfilClick = () => {
     setMenuPerfilAbierto(true);
   };
@@ -33,10 +42,9 @@ const Inicio = () => {
     setMenuPerfilAbierto(false);
   };
 
-  // Eliminar esta función si no se usa
-  // const handleConfiguracionClick = () => {
-  //   navigate('/configuracion');
-  // };
+  const handleEstadisticasClick = () => {
+    navigate('/estadisticas');
+  };
 
   return (
     <div className="inicio-container">
@@ -55,7 +63,7 @@ const Inicio = () => {
         <span className="texto-boton">Perfil</span>
       </div>
 
-      {/* Resto del contenido igual... */}
+      {/* Resto del contenido */}
       <div className="logo-superior">
         <img src={logo} alt="Logo" />
       </div>
@@ -79,7 +87,7 @@ const Inicio = () => {
       </div>
 
       <div className="modos-juego-container">
-        <div className="modo-cuadro modo-solo-cuadro">
+        <div className="modo-cuadro modo-solo-cuadro" onClick={handleJugoSoloClick} style={{ cursor: 'pointer' }}>
           <div className="icono-cuadro">
             <FaUser className="icono-grande" />
           </div>
@@ -87,7 +95,7 @@ const Inicio = () => {
           <p className="modo-descripcion">Desafía tus propios límites</p>
         </div>
 
-        <div className="modo-cuadro modo-multi-cuadro">
+        <div className="modo-cuadro modo-multi-cuadro" onClick={handleMultijugadorClick} style={{ cursor: 'pointer' }}>
           <div className="icono-cuadro">
             <FaUsers className="icono-grande" />
           </div>
@@ -96,7 +104,7 @@ const Inicio = () => {
         </div>
       </div>
 
-      <div className="cuadro-estadisticas">
+      <div className="cuadro-estadisticas" onClick={handleEstadisticasClick} style={{ cursor: 'pointer' }}>
         <div className="circulo-estadisticas">
           <img src={estadisticasLogo} alt="Estadísticas" className="estadisticas-imagen" />
         </div>
