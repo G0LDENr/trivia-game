@@ -28,7 +28,7 @@ const JuegoSolo = () => {
   
   // Puntuación base por pregunta
   const PUNTUACION_BASE = 100;
-  const TIEMPO_LIMITE = 30; // segundos
+  const TIEMPO_LIMITE = 30;
 
   // IDs de las categorías
   const CATEGORIAS = {
@@ -101,6 +101,24 @@ const JuegoSolo = () => {
     cargarPreguntas();
   }, [cargarPreguntas]);
 
+  const calcularPuntaje = (esCorrecta, tiempoUsado, pistaUsada) => {
+    if (!esCorrecta) return 0;
+    
+    let puntaje = PUNTUACION_BASE;
+    const porcentajeTiempo = tiempoUsado / TIEMPO_LIMITE;
+    if (porcentajeTiempo < 0.3) {
+      puntaje += 50;
+    } else if (porcentajeTiempo < 0.6) {
+      puntaje += 20;
+    }
+    
+    if (pistaUsada) {
+      puntaje -= 30;
+    }
+    
+    return Math.max(0, puntaje);
+  };
+
   const manejarTiempoAgotado = useCallback(() => {
     if (respuestaSeleccionada !== null) return;
     
@@ -109,23 +127,14 @@ const JuegoSolo = () => {
     
     const puntajeObtenido = 0;
     
-    // Registrar respuesta como incorrecta por tiempo
     setRespuestasUsuario(prev => [...prev, {
       pregunta: pregunta.texto,
-      respuestaSeleccionada: null,
-      respuestaCorrecta: pregunta.correcta,
       esCorrecta: false,
-      respuestaTexto: 'Tiempo agotado',
-      respuestaCorrectaTexto: pregunta.respuestas[pregunta.correcta],
-      puntaje: puntajeObtenido,
-      tiempoAgotado: true,
-      usoPista: mostrarPista,
-      tiempoUsado: TIEMPO_LIMITE
+      puntaje: puntajeObtenido
     }]);
     
     setPuntajeTotal(prev => prev + puntajeObtenido);
     
-    // Actualizar la pregunta con el puntaje obtenido
     setPreguntas(prev => {
       const nuevas = [...prev];
       if (nuevas[preguntaActual]) {
@@ -133,9 +142,8 @@ const JuegoSolo = () => {
       }
       return nuevas;
     });
-  }, [preguntas, preguntaActual, respuestaSeleccionada, mostrarPista]);
+  }, [preguntas, preguntaActual, respuestaSeleccionada]);
 
-  // Efecto para el temporizador
   useEffect(() => {
     let intervalo;
     
@@ -157,27 +165,6 @@ const JuegoSolo = () => {
     return () => clearInterval(intervalo);
   }, [temporizadorActivo, mostrarResultados, respuestaSeleccionada, tiempoRestante, tiempoAgotado, manejarTiempoAgotado, mostrarReglas]);
 
-  const calcularPuntaje = (esCorrecta, tiempoUsado, pistaUsada) => {
-    if (!esCorrecta) return 0;
-    
-    let puntaje = PUNTUACION_BASE;
-    
-    // Bonificación por tiempo rápido
-    const porcentajeTiempo = tiempoUsado / TIEMPO_LIMITE;
-    if (porcentajeTiempo < 0.3) {
-      puntaje += 50; // Bono por respuesta muy rápida
-    } else if (porcentajeTiempo < 0.6) {
-      puntaje += 20; // Bono por respuesta rápida
-    }
-    
-    // Penalización por usar pista
-    if (pistaUsada) {
-      puntaje -= 30;
-    }
-    
-    return Math.max(0, puntaje);
-  };
-
   const handleRespuestaClick = (indice) => {
     if (respuestaSeleccionada !== null) return;
     if (tiempoAgotado) return;
@@ -189,23 +176,14 @@ const JuegoSolo = () => {
     const esCorrecta = (indice === preguntas[preguntaActual].correcta);
     const puntajeObtenido = calcularPuntaje(esCorrecta, tiempoUsado, mostrarPista);
     
-    // Registrar respuesta
     setRespuestasUsuario(prev => [...prev, {
       pregunta: preguntas[preguntaActual].texto,
-      respuestaSeleccionada: indice,
-      respuestaCorrecta: preguntas[preguntaActual].correcta,
       esCorrecta: esCorrecta,
-      respuestaTexto: preguntas[preguntaActual].respuestas[indice],
-      respuestaCorrectaTexto: preguntas[preguntaActual].respuestas[preguntas[preguntaActual].correcta],
-      puntaje: puntajeObtenido,
-      tiempoAgotado: false,
-      usoPista: mostrarPista,
-      tiempoUsado: tiempoUsado
+      puntaje: puntajeObtenido
     }]);
     
     setPuntajeTotal(prev => prev + puntajeObtenido);
     
-    // Actualizar la pregunta con el puntaje obtenido
     setPreguntas(prev => {
       const nuevas = [...prev];
       nuevas[preguntaActual].puntajeObtenido = puntajeObtenido;
@@ -276,10 +254,8 @@ const JuegoSolo = () => {
     setMostrarReglas(false);
   };
 
-  // Calcular estadísticas
   const respuestasCorrectas = respuestasUsuario.filter(r => r.esCorrecta).length;
-  const respuestasIncorrectas = respuestasUsuario.filter(r => !r.esCorrecta && !r.tiempoAgotado).length;
-  const respuestasTiempo = respuestasUsuario.filter(r => r.tiempoAgotado).length;
+  const respuestasIncorrectas = respuestasUsuario.filter(r => !r.esCorrecta).length;
   const porcentaje = preguntas.length > 0 ? Math.round((respuestasCorrectas / preguntas.length) * 100) : 0;
   const pistaUsadaCount = respuestasUsuario.filter(r => r.usoPista).length;
   const puntajeMaximoPosible = preguntas.length * PUNTUACION_BASE;
@@ -332,8 +308,7 @@ const JuegoSolo = () => {
   const preguntasRestantes = preguntas.length - preguntaActual - 1;
   const progreso = ((preguntaActual + 1) / preguntas.length) * 100;
   const porcentajeTiempo = (tiempoRestante / TIEMPO_LIMITE) * 100;
-  const colorTiempo = tiempoRestante > 15 ? '#1da74a' : (tiempoRestante > 5 ? '#ff9800' : '#f44336');
-  const tiempoCritico = tiempoRestante <= 5;
+  const colorTiempo = tiempoRestante > 15 ? '#1da74a' : (tiempoRestante > 5 ? '#1c68f1' : '#1c68f1');
 
   // Pantalla de reglas
   if (mostrarReglas) {
@@ -365,7 +340,7 @@ const JuegoSolo = () => {
               </div>
               <div className="regla-item">
                 <span className="regla-numero">5</span>
-                <p>Usar pista: <strong>-30 puntos</strong> (solo si respondes correctamente)</p>
+                <p>Usar pista: <strong>-30 puntos</strong></p>
               </div>
               <div className="regla-item">
                 <span className="regla-numero">6</span>
@@ -421,11 +396,11 @@ const JuegoSolo = () => {
               </div>
               
               <div className="icono-item">
-                <div className="icono-circulo-naranja">
+                <div className="icono-circulo-azul">
                   <FaClock className="icono-reloj" />
                 </div>
-                <div className="icono-numero">{respuestasTiempo}</div>
-                <div className="icono-label">Tiempo agotado</div>
+                <div className="icono-numero">{(preguntas.length - respuestasCorrectas - respuestasIncorrectas)}</div>
+                <div className="icono-label">Tiempo</div>
               </div>
             </div>
             
@@ -453,7 +428,7 @@ const JuegoSolo = () => {
                   <div className="detalle-numero">Pregunta {idx + 1}</div>
                   <div className="detalle-puntaje">{resp.puntaje} pts</div>
                   <div className="detalle-estado">
-                    {resp.tiempoAgotado ? '⏰ Tiempo' : (resp.esCorrecta ? '✓' : '✗')}
+                    {resp.esCorrecta ? <FaCheck className="icono-palomita-ok" /> : <FaTimes className="icono-tache-ok" />}
                   </div>
                 </div>
               ))}
@@ -464,16 +439,13 @@ const JuegoSolo = () => {
             <button className="btn-intentar" onClick={handleReiniciar}>
               Intentar de nuevo
             </button>
-            <button className="btn-volver" onClick={() => navigate('/inicio')}>
-              Volver al inicio
-            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  // Pantalla principal del juego con temporizador
+  // Pantalla principal del juego
   return (
     <div className="juego-solo-container">
       <div className="boton-regreso" onClick={() => navigate('/inicio')}>
@@ -490,7 +462,6 @@ const JuegoSolo = () => {
         </div>
       </div>
 
-      {/* Temporizador */}
       <div className="temporizador-container">
         <div className="temporizador-info">
           <FaClock className="temporizador-icono" />
@@ -498,7 +469,7 @@ const JuegoSolo = () => {
         </div>
         <div className="temporizador-barra">
           <div 
-            className={`temporizador-barra-lleno ${tiempoCritico ? 'tiempo-critico' : ''}`}
+            className="temporizador-barra-lleno"
             style={{ 
               width: `${porcentajeTiempo}%`,
               backgroundColor: colorTiempo
