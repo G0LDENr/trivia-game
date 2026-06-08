@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaArrowLeft, FaUser, FaCopy, FaCheck, FaPlay, FaExclamationTriangle } from 'react-icons/fa';
 import { SalaController } from '../../controllers/salaController';
-import '../../css/Multijugador/sala-multijugador.css';
+import '../../css/Multijugador/sala-espera.css';
 
 const SalaEspera = () => {
   const navigate = useNavigate();

@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FaArrowLeft, FaClock, FaTrophy, FaUser } from 'react-icons/fa';
+import { FaArrowLeft, FaClock, FaTrophy, FaUser, FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
 import { QuestionController } from '../../controllers/preguntasController';
 import { SalaController } from '../../controllers/salaController';
 import "../../css/Inicio/inicio.css";
 import "../../css/Juego/juego.css";
-import "../../css/Multijugador/sala-multijugador.css";
+import "../../css/Juego/juego-multijugador.css";
 import logo from "../../img/Logo.png";
 
 const JuegoMultijugador = () => {
@@ -30,6 +30,12 @@ const JuegoMultijugador = () => {
   const [esperandoFeedback, setEsperandoFeedback] = useState(false);
   const [jugadorTermino, setJugadorTermino] = useState(false);
   const [esperandoOponentes, setEsperandoOponentes] = useState(false);
+  const [salaCancelada, setSalaCancelada] = useState(false);
+  const [jugadorSalio, setJugadorSalio] = useState(null);
+  
+  const timerRef = useRef(null);
+  const cargandoRef = useRef(false);
+  const salaCanceladaRef = useRef(false);
   
   const TIEMPO_LIMITE = 30;
   const TOTAL_PREGUNTAS = 15;
@@ -50,8 +56,54 @@ const JuegoMultijugador = () => {
   }, [navigate]);
 
   const cargarSala = useCallback(async () => {
+    if (cargandoRef.current || salaCanceladaRef.current) return;
+    cargandoRef.current = true;
+    
     const result = await SalaController.getSalaByCodigo(codigo);
+    
+    // Si la sala no existe o hubo error
+    if (!result.success || !result.data) {
+      if (!salaCanceladaRef.current) {
+        salaCanceladaRef.current = true;
+        setSalaCancelada(true);
+        setJugadorSalio(null);
+        setTemporizadorActivo(false);
+      }
+      cargandoRef.current = false;
+      return;
+    }
+    
     if (result.success && result.data) {
+      // Verificar si el jugador actual sigue en la sala
+      const jugadorAunEnSala = result.data.jugadores?.find(j => j.id === jugadorActual?.id);
+      
+      if (!jugadorAunEnSala && jugadorActual) {
+        if (!salaCanceladaRef.current) {
+          salaCanceladaRef.current = true;
+          setSalaCancelada(true);
+          setJugadorSalio(null);
+          setTemporizadorActivo(false);
+        }
+        cargandoRef.current = false;
+        return;
+      }
+      
+      // Verificar si algún oponente se salió
+      if (oponentes.length > 0 && result.data.jugadores) {
+        const jugadoresActualesIds = result.data.jugadores.map(j => j.id);
+        const oponentesQueSalieron = oponentes.filter(o => !jugadoresActualesIds.includes(o.id));
+        
+        if (oponentesQueSalieron.length > 0 && !salaCanceladaRef.current) {
+          const jugador = oponentesQueSalieron[0];
+          salaCanceladaRef.current = true;
+          setSalaCancelada(true);
+          setJugadorSalio(jugador.nombre);
+          setTemporizadorActivo(false);
+          cargandoRef.current = false;
+          return;
+        }
+      }
+      
       setSala(result.data);
       
       if (result.data.jugadores && jugadorActual) {
@@ -60,17 +112,29 @@ const JuegoMultijugador = () => {
         
         const jugadorEnSala = result.data.jugadores.find(j => j.id === jugadorActual.id);
         const yoComplete = jugadorEnSala?.completado === true;
-        const todosCompletaron = otros.every(j => j.completado === true);
+        const todosCompletaron = result.data.jugadores.every(j => j.completado === true);
+        
+        if (result.data.estado === 'terminado' && !mostrarResultados) {
+          setEsperandoOponentes(false);
+          setJugadorTermino(false);
+          setMostrarResultados(true);
+          setTemporizadorActivo(false);
+          cargandoRef.current = false;
+          return;
+        }
+        
+        if (todosCompletaron && !mostrarResultados) {
+          setEsperandoOponentes(false);
+          setJugadorTermino(false);
+          setMostrarResultados(true);
+          setTemporizadorActivo(false);
+          cargandoRef.current = false;
+          return;
+        }
         
         if (yoComplete && !todosCompletaron && !jugadorTermino && !mostrarResultados) {
           setJugadorTermino(true);
           setEsperandoOponentes(true);
-          setTemporizadorActivo(false);
-        }
-        
-        if (yoComplete && todosCompletaron && !mostrarResultados) {
-          setEsperandoOponentes(false);
-          setMostrarResultados(true);
           setTemporizadorActivo(false);
         }
       }
@@ -78,14 +142,29 @@ const JuegoMultijugador = () => {
       if (result.data.estado === 'jugando' && !partidaIniciada) {
         setPartidaIniciada(true);
       }
-      
-      if (result.data.estado === 'terminado' && !mostrarResultados) {
-        setMostrarResultados(true);
-        setTemporizadorActivo(false);
-        setEsperandoOponentes(false);
-      }
     }
-  }, [codigo, jugadorActual, jugadorTermino, mostrarResultados, partidaIniciada]);
+    cargandoRef.current = false;
+  }, [codigo, jugadorActual, oponentes, mostrarResultados, partidaIniciada, jugadorTermino]);
+
+  useEffect(() => {
+    if (!codigo) return;
+    
+    cargarSala();
+    const intervalo = setInterval(() => {
+      cargarSala();
+    }, 2000);
+    
+    return () => clearInterval(intervalo);
+  }, [codigo, cargarSala]);
+
+  useEffect(() => {
+    if (salaCancelada) {
+      const timer = setTimeout(() => {
+        navigate('/multijugador');
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [salaCancelada, navigate]);
 
   const cargarPreguntas = useCallback(async () => {
     try {
@@ -136,28 +215,24 @@ const JuegoMultijugador = () => {
   }, [CATEGORIAS.VIDEOJUEGOS, CATEGORIAS.AUTOS, CATEGORIAS.COMIDA]);
 
   useEffect(() => {
-    if (codigo) {
-      cargarSala();
+    if (codigo && preguntas.length === 0 && !mostrarResultados && !salaCancelada) {
       cargarPreguntas();
-      const intervalo = setInterval(cargarSala, 2000);
-      return () => clearInterval(intervalo);
     }
-  }, [codigo, cargarSala, cargarPreguntas]);
+  }, [codigo, preguntas.length, mostrarResultados, cargarPreguntas, salaCancelada]);
 
   useEffect(() => {
-    if (partidaIniciada && !mostrarResultados && !jugadorTermino && preguntaActual < TOTAL_PREGUNTAS) {
-      setRespuestaSeleccionada(null);
-      setTiempoAgotado(false);
-      setTiempoRestante(TIEMPO_LIMITE);
-      setTemporizadorActivo(true);
-      setEsperandoFeedback(false);
-    }
-  }, [preguntaActual, partidaIniciada, mostrarResultados, jugadorTermino]);
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
   const manejarTiempoAgotado = useCallback(async () => {
     if (respuestaSeleccionada !== null) return;
     if (esperandoFeedback) return;
     if (jugadorTermino) return;
+    if (salaCancelada) return;
     
     setEsperandoFeedback(true);
     const puntajeObtenido = 0;
@@ -167,23 +242,29 @@ const JuegoMultijugador = () => {
     
     await SalaController.actualizarRespuesta(codigo, jugadorActual.id, preguntaActual, false, puntajeObtenido, TIEMPO_LIMITE);
     
-    setTimeout(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
       setFeedbackMensaje(null);
       setEsperandoFeedback(false);
       if (preguntaActual + 1 < TOTAL_PREGUNTAS) {
         setPreguntaActual(prev => prev + 1);
+        setRespuestaSeleccionada(null);
+        setTiempoAgotado(false);
+        setTiempoRestante(TIEMPO_LIMITE);
+        setTemporizadorActivo(true);
       } else {
         setJugadorTermino(true);
         setTemporizadorActivo(false);
         setEsperandoOponentes(true);
       }
+      timerRef.current = null;
     }, 1500);
-  }, [respuestaSeleccionada, esperandoFeedback, jugadorTermino, codigo, jugadorActual, preguntaActual]);
+  }, [respuestaSeleccionada, esperandoFeedback, jugadorTermino, salaCancelada, codigo, jugadorActual, preguntaActual]);
 
   useEffect(() => {
     let intervalo;
     
-    if (temporizadorActivo && partidaIniciada && !mostrarResultados && !esperandoFeedback && !jugadorTermino && tiempoRestante > 0 && respuestaSeleccionada === null && !tiempoAgotado && preguntaActual < TOTAL_PREGUNTAS) {
+    if (temporizadorActivo && partidaIniciada && !mostrarResultados && !esperandoFeedback && !jugadorTermino && !salaCancelada && tiempoRestante > 0 && respuestaSeleccionada === null && !tiempoAgotado && preguntaActual < TOTAL_PREGUNTAS) {
       intervalo = setInterval(() => {
         setTiempoRestante(prev => {
           if (prev <= 1) {
@@ -199,7 +280,7 @@ const JuegoMultijugador = () => {
     }
     
     return () => clearInterval(intervalo);
-  }, [temporizadorActivo, partidaIniciada, mostrarResultados, esperandoFeedback, jugadorTermino, tiempoRestante, respuestaSeleccionada, tiempoAgotado, preguntaActual, manejarTiempoAgotado]);
+  }, [temporizadorActivo, partidaIniciada, mostrarResultados, esperandoFeedback, jugadorTermino, salaCancelada, tiempoRestante, respuestaSeleccionada, tiempoAgotado, preguntaActual, manejarTiempoAgotado]);
 
   const calcularPuntaje = (esCorrecta, tiempoUsado) => {
     if (!esCorrecta) return 0;
@@ -215,6 +296,7 @@ const JuegoMultijugador = () => {
     if (tiempoAgotado) return;
     if (esperandoFeedback) return;
     if (jugadorTermino) return;
+    if (salaCancelada) return;
     
     setEsperandoFeedback(true);
     setRespuestaSeleccionada(indice);
@@ -235,16 +317,22 @@ const JuegoMultijugador = () => {
     
     await SalaController.actualizarRespuesta(codigo, jugadorActual.id, preguntaActual, esCorrecta, puntajeObtenido, tiempoUsado);
     
-    setTimeout(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
       setFeedbackMensaje(null);
       setEsperandoFeedback(false);
       if (preguntaActual + 1 < TOTAL_PREGUNTAS) {
         setPreguntaActual(prev => prev + 1);
+        setRespuestaSeleccionada(null);
+        setTiempoAgotado(false);
+        setTiempoRestante(TIEMPO_LIMITE);
+        setTemporizadorActivo(true);
       } else {
         setJugadorTermino(true);
         setTemporizadorActivo(false);
         setEsperandoOponentes(true);
       }
+      timerRef.current = null;
     }, 1500);
   };
 
@@ -285,6 +373,28 @@ const JuegoMultijugador = () => {
     return mejorJugador;
   };
 
+  if (salaCancelada) {
+    return (
+      <div className="multijugador-container">
+        <button className="btn-volver-sala" onClick={() => navigate('/multijugador')}>
+          <FaArrowLeft />
+        </button>
+        <div className="sala-cancelada-container">
+          <FaExclamationTriangle className="sala-cancelada-icono" />
+          <h2>Partida cancelada</h2>
+          <p>
+            {jugadorSalio 
+              ? `El jugador "${jugadorSalio}" se salió de la partida` 
+              : 'La partida ha sido cancelada'}
+          </p>
+          <button className="btn-volver-inicio" onClick={() => navigate('/multijugador')}>
+            Volver al multijugador
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className="multijugador-container">
@@ -311,13 +421,14 @@ const JuegoMultijugador = () => {
     );
   }
 
-  if (esperandoOponentes) {
+  if (esperandoOponentes && !mostrarResultados && !salaCancelada) {
     return (
       <div className="multijugador-container">
         <button className="btn-volver-sala" onClick={salirSala}>
           <FaArrowLeft />
         </button>
         <div className="esperando-container">
+          <FaSpinner className="spinner-grande" />
           <h2>¡Completaste todas las preguntas!</h2>
           <p>Esperando a que los demás jugadores terminen...</p>
           <div className="oponentes-estado">
@@ -341,6 +452,7 @@ const JuegoMultijugador = () => {
   if (mostrarResultados) {
     const ganador = obtenerGanador();
     const esGanador = ganador?.id === jugadorActual?.id;
+    const todosJugadores = sala?.jugadores || [];
     
     return (
       <div className="multijugador-container">
@@ -362,15 +474,19 @@ const JuegoMultijugador = () => {
             </div>
           )}
           
-          <div className="puntaje-final-jugador">
-            <div className="puntaje-final-avatar">
-              <FaUser />
-            </div>
-            <div className="puntaje-final-info">
-              <span className="puntaje-final-nombre">Tu puntaje</span>
-              <span className="puntaje-final-puntos">{puntajeTotal} pts</span>
-              <span className="puntaje-final-aciertos">{respuestasJugador.filter(r => r.esCorrecta).length}/{TOTAL_PREGUNTAS} aciertos</span>
-            </div>
+          <div className="jugadores-resultados">
+            {todosJugadores.map((jugador, idx) => (
+              <div key={idx} className={`jugador-resultado-card ${jugador.id === ganador?.id ? 'ganador' : ''}`}>
+                <div className="jugador-resultado-avatar">
+                  <FaUser />
+                </div>
+                <div className="jugador-resultado-info">
+                  <span className="jugador-resultado-nombre">{jugador.nombre}</span>
+                  <span className="jugador-resultado-puntos">{jugador.puntaje} pts</span>
+                </div>
+                {jugador.id === ganador?.id && <FaTrophy className="jugador-resultado-trophy" />}
+              </div>
+            ))}
           </div>
           
           <div className="botones-resultados-multi">
@@ -443,7 +559,7 @@ const JuegoMultijugador = () => {
               key={`${preguntaActual}-${index}`}
               className={getClaseRespuesta(index)}
               onClick={() => handleRespuestaClick(index)}
-              disabled={respuestaSeleccionada !== null || tiempoAgotado || esperandoFeedback || jugadorTermino}
+              disabled={respuestaSeleccionada !== null || tiempoAgotado || esperandoFeedback || jugadorTermino || salaCancelada}
             >
               <span className="respuesta-letra">{String.fromCharCode(65 + index)}.</span>
               {respuesta}

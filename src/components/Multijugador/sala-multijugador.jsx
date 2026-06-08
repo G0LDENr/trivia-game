@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaPlus, FaDoorOpen } from 'react-icons/fa';
 import { SalaController } from '../../controllers/salaController';
-import '../../css/Multijugador/sala-multijugador.css';
+import '../../css/Multijugador/multijugador.css';
 
 const Multijugador = () => {
   const navigate = useNavigate();
