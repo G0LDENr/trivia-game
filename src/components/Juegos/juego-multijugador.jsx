@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FaArrowLeft, FaClock, FaTrophy, FaUser, FaSpinner, FaExclamationTriangle } from 'react-icons/fa';
+import { FaArrowLeft, FaClock, FaTrophy, FaUser, FaSpinner } from 'react-icons/fa';
 import { QuestionController } from '../../controllers/preguntasController';
 import { SalaController } from '../../controllers/salaController';
+import "../../css/Juego/juego-multijugador.css";
 import "../../css/Inicio/inicio.css";
 import "../../css/Juego/juego.css";
-import "../../css/Juego/juego-multijugador.css";
 import logo from "../../img/Logo.png";
 
 const JuegoMultijugador = () => {
@@ -33,9 +33,7 @@ const JuegoMultijugador = () => {
   const [salaCancelada, setSalaCancelada] = useState(false);
   const [jugadorSalio, setJugadorSalio] = useState(null);
   
-  const timerRef = useRef(null);
-  const cargandoRef = useRef(false);
-  const salaCanceladaRef = useRef(false);
+  const ultimosJugadoresRef = useRef([]); // Ahora guardamos objetos completos, no solo IDs
   
   const TIEMPO_LIMITE = 30;
   const TOTAL_PREGUNTAS = 15;
@@ -55,54 +53,52 @@ const JuegoMultijugador = () => {
     setJugadorActual(JSON.parse(usuario));
   }, [navigate]);
 
-  const cargarSala = useCallback(async () => {
-    if (cargandoRef.current || salaCanceladaRef.current) return;
-    cargandoRef.current = true;
-    
+  useEffect(() => {
+    if (sala && sala.jugadores && ultimosJugadoresRef.current.length === 0) {
+      ultimosJugadoresRef.current = sala.jugadores.map(j => ({ id: j.id, nombre: j.nombre }));
+    }
+  }, [sala]);
+
+  const cargarSala = async () => {
     const result = await SalaController.getSalaByCodigo(codigo);
     
-    // Si la sala no existe o hubo error
     if (!result.success || !result.data) {
-      if (!salaCanceladaRef.current) {
-        salaCanceladaRef.current = true;
+      if (!salaCancelada) {
         setSalaCancelada(true);
         setJugadorSalio(null);
         setTemporizadorActivo(false);
       }
-      cargandoRef.current = false;
       return;
     }
     
     if (result.success && result.data) {
-      // Verificar si el jugador actual sigue en la sala
       const jugadorAunEnSala = result.data.jugadores?.find(j => j.id === jugadorActual?.id);
-      
-      if (!jugadorAunEnSala && jugadorActual) {
-        if (!salaCanceladaRef.current) {
-          salaCanceladaRef.current = true;
-          setSalaCancelada(true);
-          setJugadorSalio(null);
-          setTemporizadorActivo(false);
-        }
-        cargandoRef.current = false;
+      if (!jugadorAunEnSala && jugadorActual && !salaCancelada) {
+        setSalaCancelada(true);
+        setJugadorSalio(null);
+        setTemporizadorActivo(false);
         return;
       }
       
-      // Verificar si algún oponente se salió
-      if (oponentes.length > 0 && result.data.jugadores) {
-        const jugadoresActualesIds = result.data.jugadores.map(j => j.id);
-        const oponentesQueSalieron = oponentes.filter(o => !jugadoresActualesIds.includes(o.id));
+      // Detectar si alguien se salió comparando los objetos completos
+      const jugadoresActuales = result.data.jugadores?.map(j => ({ id: j.id, nombre: j.nombre })) || [];
+      const jugadoresAnteriores = ultimosJugadoresRef.current;
+      
+      if (jugadoresAnteriores.length > 0 && jugadoresActuales.length < jugadoresAnteriores.length) {
+        const jugadorQueSalio = jugadoresAnteriores.find(
+          jAntiguo => !jugadoresActuales.some(jActual => jActual.id === jAntiguo.id)
+        );
         
-        if (oponentesQueSalieron.length > 0 && !salaCanceladaRef.current) {
-          const jugador = oponentesQueSalieron[0];
-          salaCanceladaRef.current = true;
+        if (jugadorQueSalio && jugadorQueSalio.id !== jugadorActual?.id) {
           setSalaCancelada(true);
-          setJugadorSalio(jugador.nombre);
+          setJugadorSalio(jugadorQueSalio.nombre);
           setTemporizadorActivo(false);
-          cargandoRef.current = false;
           return;
         }
       }
+      
+      // Actualizar el ref con los jugadores actuales
+      ultimosJugadoresRef.current = jugadoresActuales;
       
       setSala(result.data);
       
@@ -114,27 +110,15 @@ const JuegoMultijugador = () => {
         const yoComplete = jugadorEnSala?.completado === true;
         const todosCompletaron = result.data.jugadores.every(j => j.completado === true);
         
-        if (result.data.estado === 'terminado' && !mostrarResultados) {
-          setEsperandoOponentes(false);
-          setJugadorTermino(false);
-          setMostrarResultados(true);
-          setTemporizadorActivo(false);
-          cargandoRef.current = false;
-          return;
-        }
-        
-        if (todosCompletaron && !mostrarResultados) {
-          setEsperandoOponentes(false);
-          setJugadorTermino(false);
-          setMostrarResultados(true);
-          setTemporizadorActivo(false);
-          cargandoRef.current = false;
-          return;
-        }
-        
         if (yoComplete && !todosCompletaron && !jugadorTermino && !mostrarResultados) {
           setJugadorTermino(true);
           setEsperandoOponentes(true);
+          setTemporizadorActivo(false);
+        }
+        
+        if (yoComplete && todosCompletaron && !mostrarResultados) {
+          setEsperandoOponentes(false);
+          setMostrarResultados(true);
           setTemporizadorActivo(false);
         }
       }
@@ -142,26 +126,20 @@ const JuegoMultijugador = () => {
       if (result.data.estado === 'jugando' && !partidaIniciada) {
         setPartidaIniciada(true);
       }
+      
+      if (result.data.estado === 'terminado' && !mostrarResultados) {
+        setMostrarResultados(true);
+        setTemporizadorActivo(false);
+        setEsperandoOponentes(false);
+      }
     }
-    cargandoRef.current = false;
-  }, [codigo, jugadorActual, oponentes, mostrarResultados, partidaIniciada, jugadorTermino]);
-
-  useEffect(() => {
-    if (!codigo) return;
-    
-    cargarSala();
-    const intervalo = setInterval(() => {
-      cargarSala();
-    }, 2000);
-    
-    return () => clearInterval(intervalo);
-  }, [codigo, cargarSala]);
+  };
 
   useEffect(() => {
     if (salaCancelada) {
       const timer = setTimeout(() => {
         navigate('/multijugador');
-      }, 5000);
+      }, 4000);
       return () => clearTimeout(timer);
     }
   }, [salaCancelada, navigate]);
@@ -212,27 +190,33 @@ const JuegoMultijugador = () => {
       console.error('Error:', error);
       setLoading(false);
     }
-  }, [CATEGORIAS.VIDEOJUEGOS, CATEGORIAS.AUTOS, CATEGORIAS.COMIDA]);
-
-  useEffect(() => {
-    if (codigo && preguntas.length === 0 && !mostrarResultados && !salaCancelada) {
-      cargarPreguntas();
-    }
-  }, [codigo, preguntas.length, mostrarResultados, cargarPreguntas, salaCancelada]);
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const manejarTiempoAgotado = useCallback(async () => {
+  useEffect(() => {
+    if (codigo) {
+      cargarSala();
+      cargarPreguntas();
+      const intervalo = setInterval(cargarSala, 2000);
+      return () => clearInterval(intervalo);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [codigo]);
+
+  useEffect(() => {
+    if (partidaIniciada && !mostrarResultados && !jugadorTermino && preguntaActual < TOTAL_PREGUNTAS) {
+      setRespuestaSeleccionada(null);
+      setTiempoAgotado(false);
+      setTiempoRestante(TIEMPO_LIMITE);
+      setTemporizadorActivo(true);
+      setEsperandoFeedback(false);
+    }
+  }, [preguntaActual, partidaIniciada, mostrarResultados, jugadorTermino]);
+
+  const manejarTiempoAgotado = async () => {
     if (respuestaSeleccionada !== null) return;
     if (esperandoFeedback) return;
     if (jugadorTermino) return;
-    if (salaCancelada) return;
     
     setEsperandoFeedback(true);
     const puntajeObtenido = 0;
@@ -242,24 +226,18 @@ const JuegoMultijugador = () => {
     
     await SalaController.actualizarRespuesta(codigo, jugadorActual.id, preguntaActual, false, puntajeObtenido, TIEMPO_LIMITE);
     
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => {
+    setTimeout(() => {
       setFeedbackMensaje(null);
       setEsperandoFeedback(false);
       if (preguntaActual + 1 < TOTAL_PREGUNTAS) {
         setPreguntaActual(prev => prev + 1);
-        setRespuestaSeleccionada(null);
-        setTiempoAgotado(false);
-        setTiempoRestante(TIEMPO_LIMITE);
-        setTemporizadorActivo(true);
       } else {
         setJugadorTermino(true);
         setTemporizadorActivo(false);
         setEsperandoOponentes(true);
       }
-      timerRef.current = null;
     }, 1500);
-  }, [respuestaSeleccionada, esperandoFeedback, jugadorTermino, salaCancelada, codigo, jugadorActual, preguntaActual]);
+  };
 
   useEffect(() => {
     let intervalo;
@@ -280,7 +258,8 @@ const JuegoMultijugador = () => {
     }
     
     return () => clearInterval(intervalo);
-  }, [temporizadorActivo, partidaIniciada, mostrarResultados, esperandoFeedback, jugadorTermino, salaCancelada, tiempoRestante, respuestaSeleccionada, tiempoAgotado, preguntaActual, manejarTiempoAgotado]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [temporizadorActivo, partidaIniciada, mostrarResultados, esperandoFeedback, jugadorTermino, salaCancelada, tiempoRestante, respuestaSeleccionada, tiempoAgotado, preguntaActual]);
 
   const calcularPuntaje = (esCorrecta, tiempoUsado) => {
     if (!esCorrecta) return 0;
@@ -296,7 +275,6 @@ const JuegoMultijugador = () => {
     if (tiempoAgotado) return;
     if (esperandoFeedback) return;
     if (jugadorTermino) return;
-    if (salaCancelada) return;
     
     setEsperandoFeedback(true);
     setRespuestaSeleccionada(indice);
@@ -317,27 +295,21 @@ const JuegoMultijugador = () => {
     
     await SalaController.actualizarRespuesta(codigo, jugadorActual.id, preguntaActual, esCorrecta, puntajeObtenido, tiempoUsado);
     
-    if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => {
+    setTimeout(() => {
       setFeedbackMensaje(null);
       setEsperandoFeedback(false);
       if (preguntaActual + 1 < TOTAL_PREGUNTAS) {
         setPreguntaActual(prev => prev + 1);
-        setRespuestaSeleccionada(null);
-        setTiempoAgotado(false);
-        setTiempoRestante(TIEMPO_LIMITE);
-        setTemporizadorActivo(true);
       } else {
         setJugadorTermino(true);
         setTemporizadorActivo(false);
         setEsperandoOponentes(true);
       }
-      timerRef.current = null;
     }, 1500);
   };
 
   const getClaseRespuesta = (indice) => {
-    if (respuestaSeleccionada === null && !tiempoAgotado) {
+    if (respuestaSeleccionada === null && !tiempoAgotado && !jugadorTermino && !salaCancelada) {
       return "respuesta-boton";
     }
     
@@ -347,6 +319,10 @@ const JuegoMultijugador = () => {
     
     if (respuestaSeleccionada === indice && indice !== preguntas[preguntaActual]?.correcta) {
       return "respuesta-boton respuesta-incorrecta";
+    }
+    
+    if (tiempoAgotado && indice === preguntas[preguntaActual]?.correcta) {
+      return "respuesta-boton respuesta-correcta";
     }
     
     return "respuesta-boton";
@@ -380,12 +356,9 @@ const JuegoMultijugador = () => {
           <FaArrowLeft />
         </button>
         <div className="sala-cancelada-container">
-          <FaExclamationTriangle className="sala-cancelada-icono" />
-          <h2>Partida cancelada</h2>
+          <h2>Partida Cancelada</h2>
           <p>
-            {jugadorSalio 
-              ? `El jugador "${jugadorSalio}" se salió de la partida` 
-              : 'La partida ha sido cancelada'}
+            <strong>El jugador: {jugadorSalio || 'Desconocido'}</strong> se ha salido de la partida
           </p>
           <button className="btn-volver-inicio" onClick={() => navigate('/multijugador')}>
             Volver al multijugador
@@ -421,7 +394,7 @@ const JuegoMultijugador = () => {
     );
   }
 
-  if (esperandoOponentes && !mostrarResultados && !salaCancelada) {
+  if (esperandoOponentes && !mostrarResultados) {
     return (
       <div className="multijugador-container">
         <button className="btn-volver-sala" onClick={salirSala}>
@@ -483,6 +456,7 @@ const JuegoMultijugador = () => {
                 <div className="jugador-resultado-info">
                   <span className="jugador-resultado-nombre">{jugador.nombre}</span>
                   <span className="jugador-resultado-puntos">{jugador.puntaje} pts</span>
+                  <span className="jugador-resultado-aciertos">{jugador.respuestas?.filter(r => r.esCorrecta).length || 0}/{TOTAL_PREGUNTAS} aciertos</span>
                 </div>
                 {jugador.id === ganador?.id && <FaTrophy className="jugador-resultado-trophy" />}
               </div>
@@ -501,7 +475,7 @@ const JuegoMultijugador = () => {
 
   const progreso = ((preguntaActual + 1) / TOTAL_PREGUNTAS) * 100;
   const porcentajeTiempo = (tiempoRestante / TIEMPO_LIMITE) * 100;
-  const colorTiempo = tiempoRestante > 15 ? '#1da74a' : (tiempoRestante > 5 ? '#1c68f1' : '#1c68f1');
+  const colorTiempo = tiempoRestante > 15 ? '#1da74a' : (tiempoRestante > 5 ? '#1c68f1' : '#f44336');
 
   return (
     <div className="multijugador-container">

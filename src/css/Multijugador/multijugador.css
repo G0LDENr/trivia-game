@@ -216,6 +216,91 @@
 }
 
 /* ============================================ */
+/* BOTONES DE LISTO EN SALA DE ESPERA */
+/* ============================================ */
+
+.btn-listo {
+  background: linear-gradient(135deg, #1da74a, #15803d);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
+  display: block;
+}
+
+.btn-listo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(29, 167, 74, 0.3);
+}
+
+.btn-listo:active {
+  transform: translateY(0);
+}
+
+/* Botón para cancelar listo */
+.btn-listo.cancelar {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+.btn-listo.cancelar:hover {
+  box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+}
+
+/* Badge de listo en la tarjeta del jugador */
+.badge-listo {
+  background: #1da74a;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.badge-listo::before {
+  content: "✓";
+  font-size: 0.8rem;
+}
+
+/* Tarjeta de jugador cuando está listo */
+.jugador-card.listo {
+  background: #e8f5e9;
+  border-left: 4px solid #1da74a;
+  transition: all 0.3s ease;
+}
+
+.jugador-card.listo .jugador-avatar {
+  background: #c8e6c9;
+  color: #1da74a;
+}
+
+/* Animación para cuando un jugador se marca listo */
+@keyframes listoPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.jugador-card.listo {
+  animation: listoPulse 0.3s ease;
+}
+
+/* ============================================ */
 /* ANIMACIONES */
 /* ============================================ */
 

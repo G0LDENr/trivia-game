@@ -64,13 +64,12 @@ export const SalaController = {
     }
   },
 
-  // NUEVO MÉTODO - Actualizar respuesta de un jugador
   async actualizarRespuesta(codigo, jugadorId, preguntaIndex, esCorrecta, puntaje, tiempoUsado) {
     try {
-        const result = await SalaModel.actualizarRespuesta(codigo, jugadorId, preguntaIndex, esCorrecta, puntaje, tiempoUsado);
-        return result;
+      const result = await SalaModel.actualizarRespuesta(codigo, jugadorId, preguntaIndex, esCorrecta, puntaje, tiempoUsado);
+      return result;
     } catch (error) {
-        return { success: false, error: error.message };
+      return { success: false, error: error.message };
     }
-    }
+  }
 };

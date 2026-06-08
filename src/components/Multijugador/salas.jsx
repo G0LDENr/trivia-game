@@ -12,6 +12,7 @@ const SalaEspera = () => {
   const [copiado, setCopiado] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
+  const [estoyListo, setEstoyListo] = useState(false);
 
   useEffect(() => {
     const usuario = localStorage.getItem('usuarioActual');
@@ -27,6 +28,10 @@ const SalaEspera = () => {
     if (result.success && result.data) {
       setSala(result.data);
       setError('');
+      
+      const jugador = result.data.jugadores?.find(j => j.id === jugadorActual?.id);
+      setEstoyListo(jugador?.listo || false);
+      
       if (result.data.estado === 'jugando') {
         navigate(`/multijugador/juego/${codigo}`);
       }
@@ -35,7 +40,7 @@ const SalaEspera = () => {
       setTimeout(() => navigate('/multijugador'), 2000);
     }
     setCargando(false);
-  }, [codigo, navigate]);
+  }, [codigo, navigate, jugadorActual]);
 
   useEffect(() => {
     if (jugadorActual && codigo) {
@@ -51,6 +56,14 @@ const SalaEspera = () => {
     setTimeout(() => setCopiado(false), 2000);
   };
 
+  const marcarListo = async () => {
+    const result = await SalaController.actualizarListo(codigo, jugadorActual.id, !estoyListo);
+    if (result.success) {
+      setEstoyListo(!estoyListo);
+      setSala(result.data);
+    }
+  };
+
   const iniciarPartida = async () => {
     const result = await SalaController.iniciarPartida(codigo);
     if (result.success) {
@@ -64,6 +77,7 @@ const SalaEspera = () => {
   };
 
   const esCreador = sala?.creador_id === jugadorActual?.id;
+  const todosListos = sala?.jugadores?.length >= 2 && sala.jugadores.every(j => j.listo === true);
   const hayDosJugadores = sala?.jugadores?.length >= 2;
 
   if (cargando) {
@@ -115,13 +129,14 @@ const SalaEspera = () => {
           <h3>Jugadores ({sala?.jugadores?.length}/{sala?.max_jugadores})</h3>
           <div className="lista-jugadores">
             {sala?.jugadores?.map((jugador, idx) => (
-              <div key={idx} className="jugador-card">
+              <div key={idx} className={`jugador-card ${jugador.listo ? 'listo' : ''}`}>
                 <div className="jugador-avatar">
                   <FaUser />
                 </div>
                 <div className="jugador-info">
                   <span className="jugador-nombre">{jugador.nombre}</span>
                   {jugador.id === sala?.creador_id && <span className="badge-creador">Creador</span>}
+                  {jugador.listo && <span className="badge-listo">Listo</span>}
                 </div>
               </div>
             ))}
@@ -129,22 +144,38 @@ const SalaEspera = () => {
         </div>
 
         <div className="sala-acciones">
-          {esCreador && hayDosJugadores && (
+          {!estoyListo && (
+            <button className="btn-listo" onClick={marcarListo}>
+              Estoy listo
+            </button>
+          )}
+          
+          {estoyListo && (
+            <button className="btn-listo" onClick={marcarListo}>
+              Cancelar
+            </button>
+          )}
+          
+          {esCreador && todosListos && hayDosJugadores && (
             <button className="btn-iniciar" onClick={iniciarPartida}>
               <FaPlay /> Iniciar partida
             </button>
           )}
           
-          {esCreador && !hayDosJugadores && (
+          {esCreador && !todosListos && hayDosJugadores && (
+            <p className="esperando-texto">Esperando que todos los jugadores estén listos...</p>
+          )}
+          
+          {!hayDosJugadores && (
             <p className="esperando-texto">Esperando más jugadores... (mínimo 2)</p>
           )}
           
-          {!esCreador && (
-            <p className="esperando-texto">
-              {hayDosJugadores 
-                ? 'Esperando a que el creador inicie la partida...' 
-                : 'Esperando que se unan más jugadores...'}
-            </p>
+          {!esCreador && hayDosJugadores && !todosListos && (
+            <p className="esperando-texto">Esperando a que todos se pongan listos...</p>
+          )}
+          
+          {!esCreador && hayDosJugadores && todosListos && (
+            <p className="esperando-texto">Esperando a que el creador inicie la partida...</p>
           )}
         </div>
       </div>
