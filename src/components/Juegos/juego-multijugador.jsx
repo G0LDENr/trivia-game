@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FaArrowLeft, FaClock, FaTrophy, FaUser, FaSpinner } from 'react-icons/fa';
+import { FaArrowLeft, FaClock, FaTrophy, FaUser } from 'react-icons/fa';
 import { QuestionController } from '../../controllers/preguntasController';
 import { SalaController } from '../../controllers/salaController';
 import "../../css/Inicio/inicio.css";
@@ -25,7 +25,6 @@ const JuegoMultijugador = () => {
   const [mostrarResultados, setMostrarResultados] = useState(false);
   const [respuestasJugador, setRespuestasJugador] = useState([]);
   const [partidaIniciada, setPartidaIniciada] = useState(false);
-  const [juegoTerminado, setJuegoTerminado] = useState(false);
   const [oponentes, setOponentes] = useState([]);
   const [feedbackMensaje, setFeedbackMensaje] = useState(null);
   const [esperandoFeedback, setEsperandoFeedback] = useState(false);
@@ -74,25 +73,19 @@ const JuegoMultijugador = () => {
           setMostrarResultados(true);
           setTemporizadorActivo(false);
         }
-        
-        if (!yoComplete && jugadorTermino) {
-          setJugadorTermino(false);
-          setEsperandoOponentes(false);
-        }
       }
       
       if (result.data.estado === 'jugando' && !partidaIniciada) {
         setPartidaIniciada(true);
       }
       
-      if (result.data.estado === 'terminado' && !juegoTerminado) {
-        setJuegoTerminado(true);
+      if (result.data.estado === 'terminado' && !mostrarResultados) {
         setMostrarResultados(true);
         setTemporizadorActivo(false);
         setEsperandoOponentes(false);
       }
     }
-  }, [codigo, jugadorActual, jugadorTermino, mostrarResultados, partidaIniciada, juegoTerminado]);
+  }, [codigo, jugadorActual, jugadorTermino, mostrarResultados, partidaIniciada]);
 
   const cargarPreguntas = useCallback(async () => {
     try {
@@ -152,17 +145,6 @@ const JuegoMultijugador = () => {
   }, [codigo, cargarSala, cargarPreguntas]);
 
   useEffect(() => {
-    if (sala && jugadorActual && !jugadorTermino && !mostrarResultados) {
-      const jugadorEnSala = sala.jugadores?.find(j => j.id === jugadorActual.id);
-      if (jugadorEnSala?.completado === true) {
-        setJugadorTermino(true);
-        setEsperandoOponentes(true);
-        setTemporizadorActivo(false);
-      }
-    }
-  }, [sala, jugadorActual, jugadorTermino, mostrarResultados]);
-
-  useEffect(() => {
     if (partidaIniciada && !mostrarResultados && !jugadorTermino && preguntaActual < TOTAL_PREGUNTAS) {
       setRespuestaSeleccionada(null);
       setTiempoAgotado(false);
@@ -181,7 +163,6 @@ const JuegoMultijugador = () => {
     const puntajeObtenido = 0;
     
     setRespuestaSeleccionada(-1);
-    
     setFeedbackMensaje({ type: 'tiempo', mensaje: '⏰ Tiempo agotado! 0 puntos' });
     
     await SalaController.actualizarRespuesta(codigo, jugadorActual.id, preguntaActual, false, puntajeObtenido, TIEMPO_LIMITE);
@@ -337,7 +318,6 @@ const JuegoMultijugador = () => {
           <FaArrowLeft />
         </button>
         <div className="esperando-container">
-          <FaSpinner className="spinner-grande" />
           <h2>¡Completaste todas las preguntas!</h2>
           <p>Esperando a que los demás jugadores terminen...</p>
           <div className="oponentes-estado">
@@ -360,6 +340,7 @@ const JuegoMultijugador = () => {
 
   if (mostrarResultados) {
     const ganador = obtenerGanador();
+    const esGanador = ganador?.id === jugadorActual?.id;
     
     return (
       <div className="multijugador-container">
@@ -370,34 +351,26 @@ const JuegoMultijugador = () => {
         <div className="resultados-container-multi">
           <h1 className="resultados-titulo-multi">RESULTADO FINAL</h1>
           
-          {ganador && ganador.id === jugadorActual?.id && (
+          {esGanador ? (
             <div className="ganador-mensaje">
               <FaTrophy className="ganador-icono" />
               <p>¡FELICIDADES! <br /> <strong>HAS GANADO LA PARTIDA</strong></p>
             </div>
-          )}
-          
-          {ganador && ganador.id !== jugadorActual?.id && (
+          ) : (
             <div className="perdedor-mensaje">
-              <p>El ganador es: <strong>{ganador.nombre}</strong></p>
+              <p>El ganador es: <strong>{ganador?.nombre}</strong></p>
             </div>
           )}
           
-          <div className="puntajes-finales">
-            <h3>Puntajes finales</h3>
-            {sala?.jugadores?.map((jugador, idx) => (
-              <div key={idx} className={`puntaje-final-item ${jugador.id === ganador?.id ? 'ganador' : ''}`}>
-                <div className="puntaje-final-avatar">
-                  <FaUser />
-                </div>
-                <div className="puntaje-final-info">
-                  <span className="puntaje-final-nombre">{jugador.nombre}</span>
-                  <span className="puntaje-final-puntos">{jugador.puntaje} pts</span>
-                  <span className="puntaje-final-aciertos">{jugador.respuestas?.filter(r => r.esCorrecta).length || 0}/15 aciertos</span>
-                </div>
-                {jugador.id === ganador?.id && <FaTrophy className="puntaje-final-trophy" />}
-              </div>
-            ))}
+          <div className="puntaje-final-jugador">
+            <div className="puntaje-final-avatar">
+              <FaUser />
+            </div>
+            <div className="puntaje-final-info">
+              <span className="puntaje-final-nombre">Tu puntaje</span>
+              <span className="puntaje-final-puntos">{puntajeTotal} pts</span>
+              <span className="puntaje-final-aciertos">{respuestasJugador.filter(r => r.esCorrecta).length}/{TOTAL_PREGUNTAS} aciertos</span>
+            </div>
           </div>
           
           <div className="botones-resultados-multi">
@@ -427,17 +400,9 @@ const JuegoMultijugador = () => {
 
         <h1 className="inicio-title">TRIVIA</h1>
 
-        <div className="puntajes-vivo">
-          <div className="puntaje-propio">
-            <span className="puntaje-vivo-puntos">{puntajeTotal} pts</span>
-            <span className="puntaje-vivo-progreso">{respuestasJugador.length}/{TOTAL_PREGUNTAS}</span>
-          </div>
-          {oponentes.map((oponente, idx) => (
-            <div key={idx} className="puntaje-oponente">
-              <span className="puntaje-vivo-puntos">{oponente.puntaje} pts</span>
-              <span className="puntaje-vivo-progreso">{oponente.preguntas_respondidas || 0}/{TOTAL_PREGUNTAS}</span>
-            </div>
-          ))}
+        <div className="puntaje-propio">
+          <span className="puntaje-vivo-puntos">{puntajeTotal} pts</span>
+          <span className="puntaje-vivo-progreso">{respuestasJugador.length}/{TOTAL_PREGUNTAS}</span>
         </div>
 
         <div className="progreso-container">
