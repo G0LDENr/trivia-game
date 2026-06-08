@@ -7,6 +7,7 @@ import Login from './components/Login/login';
 import Registro from './components/Login/register';
 import Perfil from './components/Perfil/perfil';
 import JuegoSolo from './components/Juegos/juego-solo';
+import Config from './components/Configuracion/configuracion';
 
 function Main() {
     return (
@@ -19,6 +20,7 @@ function Main() {
                 <Route path="/registro" element={<Registro />} />
                 <Route path="/perfil" element={<Perfil />} />
                 <Route path="/juego-solo" element={<JuegoSolo />} />
+                <Route path="/configuracion" element={<Config />} />
             </Routes>
         </Router>
     );

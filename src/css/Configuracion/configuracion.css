@@ -1,0 +1,524 @@
+/* configuracion.css - Estilos exclusivos para la configuración */
+
+/* Contenedor principal */
+.configuracion-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+}
+
+/* Fondo */
+@media (min-width: 768px) {
+  .configuracion-container {
+    background-image: url('../../img/Fondo.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+}
+
+@media (max-width: 767px) {
+  .configuracion-container {
+    background-image: url('../../img/Fondo-movil.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
+
+/* ============================================ */
+/* BOTÓN REGRESO - FLECHA */
+/* ============================================ */
+
+.configuracion-container .boton-regreso {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  z-index: 10;
+}
+
+.configuracion-container .boton-regreso:hover {
+  transform: translateX(-3px);
+}
+
+.configuracion-container .icono-flecha {
+  font-size: 2rem;
+  color: #1da74a;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  padding: 10px;
+  width: 45px;
+  height: 45px;
+  transition: all 0.3s ease;
+}
+
+.configuracion-container .icono-flecha:hover {
+  background: white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transform: scale(1.05);
+}
+
+/* ============================================ */
+/* TÍTULOS */
+/* ============================================ */
+
+.configuracion-titulo {
+  font-size: 3.5rem;
+  font-weight: 1000;
+  color: #16a34a;
+  letter-spacing: 0.025em;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.configuracion-subtitulo {
+  font-size: 1rem;
+  color: #333;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 500;
+}
+
+/* ============================================ */
+/* CONTENIDO */
+/* ============================================ */
+
+.configuracion-contenido {
+  width: 90%;
+  max-width: 700px;
+  text-align: left;
+}
+
+.config-seccion-titulo {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1da74a;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+/* Separación extra para PREFERENCIAS */
+.config-seccion-titulo.preferences {
+  margin-top: 2rem;
+}
+
+/* ============================================ */
+/* CUADRO BLANCO */
+/* ============================================ */
+
+.config-card {
+  background: white;
+  border-radius: 25px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Margen inferior para el primer cuadro */
+.config-card:first-of-type {
+  margin-bottom: 0;
+}
+
+/* Línea divisora dentro del cuadro */
+.config-divisor {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+  margin: 1rem 0;
+}
+
+/* Header del cuadro - clickeable */
+.config-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.config-card-header:hover {
+  transform: translateX(5px);
+}
+
+.config-card-icono {
+  font-size: 2rem;
+  color: #1c68f1;
+}
+
+.config-card-header-info {
+  flex: 1;
+}
+
+.config-card-titulo {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.config-card-subtitulo {
+  font-size: 0.75rem;
+  color: #999;
+  margin: 4px 0 0 0;
+}
+
+/* Toggle Switch */
+.config-toggle-switch {
+  cursor: pointer;
+}
+
+.toggle-switch {
+  width: 50px;
+  height: 24px;
+  background-color: #ccc;
+  border-radius: 24px;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.toggle-switch.active {
+  background-color: #1da74a;
+}
+
+.toggle-slider {
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 0.3s ease;
+}
+
+.toggle-switch.active .toggle-slider {
+  transform: translateX(26px);
+}
+
+/* ============================================ */
+/* MODALES */
+/* ============================================ */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 400px;
+  animation: slideUp 0.3s ease;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 1.2rem 1.5rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header-icono {
+  font-size: 1.5rem;
+  color: #1c68f1;
+}
+
+.modal-header h3 {
+  font-size: 1.1rem;
+  color: #333;
+  margin: 0;
+  flex: 1;
+}
+
+.modal-cerrar {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-cerrar:hover {
+  color: #f44336;
+}
+
+.modal-body {
+  padding: 1rem 0;
+}
+
+.modal-campo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-campo:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.modal-campo-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-campo-icono {
+  font-size: 1rem;
+  color: #1c68f1;
+  width: 25px;
+}
+
+.modal-campo-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #999;
+}
+
+.modal-campo-valor {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.modal-campo-flecha {
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+/* Formulario dentro del modal */
+.modal-body label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  padding: 0 1.5rem;
+}
+
+.modal-body input {
+  width: calc(100% - 3rem);
+  margin: 0 1.5rem;
+  padding: 0.8rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.modal-body input:focus {
+  outline: none;
+  border-color: #1c68f1;
+  box-shadow: 0 0 0 2px rgba(28, 104, 241, 0.1);
+}
+
+/* Estilos para inputs de contraseña con toggle */
+.modal-password-input {
+  position: relative;
+  margin: 0 1.5rem 1rem 1.5rem;
+}
+
+.modal-password-input input {
+  width: 100%;
+  padding: 0.8rem;
+  padding-right: 2.5rem;
+  margin: 0;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.password-toggle:hover {
+  color: #1c68f1;
+}
+
+/* Mensaje de error en modal */
+.modal-error {
+  background: #f8d7da;
+  color: #f44336;
+  padding: 0.8rem;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  margin: 0 1.5rem 1rem 1.5rem;
+  text-align: center;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.5rem 1.5rem;
+}
+
+.modal-btn-cancelar {
+  flex: 1;
+  background: #f5f5f5;
+  color: #666;
+  border: none;
+  border-radius: 10px;
+  padding: 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-btn-cancelar:hover {
+  background: #e0e0e0;
+}
+
+.modal-btn-guardar {
+  flex: 1;
+  background: linear-gradient(135deg, #1da74a, #15803d);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-btn-guardar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(29, 167, 74, 0.3);
+}
+
+/* ============================================ */
+/* ANIMACIONES */
+/* ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================ */
+/* RESPONSIVE */
+/* ============================================ */
+
+/* Tablets */
+@media (max-width: 768px) {
+  .configuracion-container {
+    padding: 1.5rem;
+  }
+  
+  .configuracion-titulo {
+    font-size: 2.5rem;
+  }
+  
+  .configuracion-container .icono-flecha {
+    font-size: 1.5rem;
+    width: 38px;
+    height: 38px;
+    padding: 8px;
+  }
+  
+  .configuracion-container .boton-regreso {
+    top: 15px;
+    left: 15px;
+  }
+  
+  .config-card {
+    padding: 1rem;
+  }
+}
+
+/* Móviles */
+@media (max-width: 550px) {
+  .configuracion-container {
+    padding: 1rem;
+  }
+  
+  .configuracion-titulo {
+    font-size: 2rem;
+  }
+  
+  .configuracion-subtitulo {
+    font-size: 0.85rem;
+  }
+  
+  .configuracion-container .icono-flecha {
+    font-size: 1.2rem;
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+  }
+  
+  .config-card {
+    padding: 0.8rem;
+  }
+  
+  .config-card-icono {
+    font-size: 1.5rem;
+  }
+  
+  .config-card-titulo {
+    font-size: 1rem;
+  }
+  
+  .config-card-subtitulo {
+    font-size: 0.65rem;
+  }
+  
+  .modal-campo-info {
+    flex-wrap: wrap;
+  }
+  
+  .config-seccion-titulo.preferences {
+    margin-top: 1.5rem;
+  }
+}

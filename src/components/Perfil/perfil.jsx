@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaUser, FaTrophy, FaGamepad, FaChartLine, FaTimes, FaStar, FaSignOutAlt, FaCog, FaChartBar, FaUserEdit } from 'react-icons/fa';
-import EditarPerfil from './editPerfil';
+import { FaUser, FaTrophy, FaGamepad, FaChartLine, FaTimes, FaStar, FaSignOutAlt, FaCog, FaChartBar } from 'react-icons/fa';
 import '../../css/Perfil/perfil.css';
 
 const Perfil = ({ isOpen, onClose, userData }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [editarPerfilAbierto, setEditarPerfilAbierto] = useState(false);
 
   useEffect(() => {
     if (userData) {
@@ -31,23 +28,6 @@ const Perfil = ({ isOpen, onClose, userData }) => {
       console.error('Error al cargar perfil:', err);
       setError('Error al cargar los datos del perfil');
     }
-  };
-
-  const handleAbrirEditarPerfil = () => {
-    setEditarPerfilAbierto(true);
-    setError('');
-    setSuccess('');
-  };
-
-  const handleCerrarEditarPerfil = () => {
-    setEditarPerfilAbierto(false);
-  };
-
-  const handleActualizarUsuario = (updatedUser) => {
-    setUser(updatedUser);
-    localStorage.setItem('usuarioActual', JSON.stringify(updatedUser));
-    setSuccess('Perfil actualizado correctamente');
-    setTimeout(() => setSuccess(''), 3000);
   };
 
   const handleLogout = () => {
@@ -76,19 +56,10 @@ const Perfil = ({ isOpen, onClose, userData }) => {
         </div>
 
         {error && <div className="perfil-error">{error}</div>}
-        {success && <div className="perfil-success">{success}</div>}
 
         <div className="perfil-contenedor-principal">
           <div className="perfil-opciones">
-            <div className="opcion-item" onClick={handleAbrirEditarPerfil}>
-              <FaUserEdit className="opcion-icon" />
-              <div className="opcion-info">
-                <span className="opcion-titulo">Editar perfil</span>
-                <span className="opcion-desc">Modificar tus datos</span>
-              </div>
-            </div>
-            
-            <div className="opcion-item">
+            <div className="opcion-item" onClick={() => navigate('/configuracion')}>
               <FaCog className="opcion-icon" />
               <div className="opcion-info">
                 <span className="opcion-titulo">Configuración</span>
@@ -132,10 +103,11 @@ const Perfil = ({ isOpen, onClose, userData }) => {
                 </div>
               </div>
             </div>
+
             {user?.partidas_jugadas > 0 && (
               <div className="stats-detalles">
                 <div className="detalle-item">
-                  <span>Victoria</span>
+                  <span>Victorias</span>
                   <strong>{Math.round((user.partidas_ganadas / user.partidas_jugadas) * 100)}%</strong>
                 </div>
               </div>
@@ -149,13 +121,6 @@ const Perfil = ({ isOpen, onClose, userData }) => {
           </div>
         </div>
       </div>
-
-      <EditarPerfil
-        isOpen={editarPerfilAbierto}
-        onClose={handleCerrarEditarPerfil}
-        userData={user}
-        onUpdate={handleActualizarUsuario}
-      />
     </>
   );
 };

@@ -168,5 +168,39 @@ export const UserController = {
       console.error('Error al actualizar perfil:', error)
       return { success: false, error: error.message }
     }
+  },
+
+  // Actualizar estadísticas del modo solo
+  async updateEstadisticasSolo(userId, puntaje) {
+    if (!userId) {
+      return { success: false, error: 'ID de usuario no proporcionado' }
+    }
+
+    if (typeof puntaje !== 'number' || puntaje < 0) {
+      return { success: false, error: 'Puntaje inválido' }
+    }
+
+    try {
+      const updatedUser = await UserModel.updateEstadisticasSolo(userId, puntaje)
+      return { success: true, data: updatedUser }
+    } catch (error) {
+      console.error('Error al actualizar estadísticas del modo solo:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  // Obtener estadísticas del modo solo
+  async getEstadisticasSolo(userId) {
+    if (!userId) {
+      return { success: false, error: 'ID de usuario no proporcionado' }
+    }
+
+    try {
+      const estadisticas = await UserModel.getEstadisticasSolo(userId)
+      return { success: true, data: estadisticas }
+    } catch (error) {
+      console.error('Error al obtener estadísticas del modo solo:', error)
+      return { success: false, error: error.message }
+    }
   }
 }

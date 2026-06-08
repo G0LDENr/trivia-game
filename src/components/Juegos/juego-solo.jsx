@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaLightbulb, FaArrowRight, FaArrowLeft, FaCheck, FaTimes, FaClock, FaInfoCircle } from "react-icons/fa";
 import { QuestionController } from '../../controllers/preguntasController';
+import { UserController } from '../../controllers/userController';
 import "../../css/Inicio/inicio.css";
 import "../../css/Juego/juego.css";
 import "../../css/Juego/juego-solo.css";
@@ -20,6 +21,7 @@ const JuegoSolo = () => {
   const [mostrarResultados, setMostrarResultados] = useState(false);
   const [puntajeTotal, setPuntajeTotal] = useState(0);
   const [mostrarReglas, setMostrarReglas] = useState(true);
+  const [puntajeGuardado, setPuntajeGuardado] = useState(false);
   
   // Estados para el temporizador
   const [tiempoRestante, setTiempoRestante] = useState(30);
@@ -36,6 +38,46 @@ const JuegoSolo = () => {
     AUTOS: '2c783dce-a1f9-49a8-aa4d-bed766ed1928',
     COMIDA: 'ee7a72b3-bf94-424c-9580-d38db9ba73d3'
   };
+
+  // Función para guardar puntaje en la base de datos
+  const guardarPuntajeEnBD = useCallback(async () => {
+    if (puntajeGuardado) return;
+    
+    try {
+      const usuarioActual = JSON.parse(localStorage.getItem('usuarioActual') || '{}');
+      const userId = usuarioActual.id;
+      
+      if (!userId) {
+        console.error('No hay usuario logueado');
+        return;
+      }
+      
+      const result = await UserController.updateEstadisticasSolo(userId, puntajeTotal);
+      
+      if (result.success) {
+        localStorage.setItem('usuarioActual', JSON.stringify(result.data));
+        setPuntajeGuardado(true);
+        console.log(`Puntaje guardado: ${puntajeTotal} puntos`);
+        
+        // Mostrar mensaje si es nuevo récord
+        const esNuevoRecord = puntajeTotal > (usuarioActual.mejor_puntaje_solo || 0);
+        if (esNuevoRecord && puntajeTotal > 0) {
+          console.log('🎉 ¡Nuevo récord personal!');
+        }
+      } else {
+        console.error('Error al guardar puntaje:', result.error);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }, [puntajeTotal, puntajeGuardado]);
+
+  // Guardar puntaje cuando se muestran los resultados
+  useEffect(() => {
+    if (mostrarResultados && puntajeTotal > 0 && !puntajeGuardado) {
+      guardarPuntajeEnBD();
+    }
+  }, [mostrarResultados, puntajeTotal, puntajeGuardado, guardarPuntajeEnBD]);
 
   const cargarPreguntas = useCallback(async () => {
     setLoading(true);
@@ -130,7 +172,8 @@ const JuegoSolo = () => {
     setRespuestasUsuario(prev => [...prev, {
       pregunta: pregunta.texto,
       esCorrecta: false,
-      puntaje: puntajeObtenido
+      puntaje: puntajeObtenido,
+      usoPista: mostrarPista
     }]);
     
     setPuntajeTotal(prev => prev + puntajeObtenido);
@@ -142,7 +185,7 @@ const JuegoSolo = () => {
       }
       return nuevas;
     });
-  }, [preguntas, preguntaActual, respuestaSeleccionada]);
+  }, [preguntas, preguntaActual, respuestaSeleccionada, mostrarPista]);
 
   useEffect(() => {
     let intervalo;
@@ -179,7 +222,8 @@ const JuegoSolo = () => {
     setRespuestasUsuario(prev => [...prev, {
       pregunta: preguntas[preguntaActual].texto,
       esCorrecta: esCorrecta,
-      puntaje: puntajeObtenido
+      puntaje: puntajeObtenido,
+      usoPista: mostrarPista
     }]);
     
     setPuntajeTotal(prev => prev + puntajeObtenido);
@@ -243,6 +287,7 @@ const JuegoSolo = () => {
     setRespuestasUsuario([]);
     setMostrarResultados(false);
     setPuntajeTotal(0);
+    setPuntajeGuardado(false);
     setTiempoRestante(TIEMPO_LIMITE);
     setTemporizadorActivo(true);
     setTiempoAgotado(false);
@@ -256,9 +301,10 @@ const JuegoSolo = () => {
 
   const respuestasCorrectas = respuestasUsuario.filter(r => r.esCorrecta).length;
   const respuestasIncorrectas = respuestasUsuario.filter(r => !r.esCorrecta).length;
+  const respuestasTiempo = preguntas.length - respuestasCorrectas - respuestasIncorrectas;
   const porcentaje = preguntas.length > 0 ? Math.round((respuestasCorrectas / preguntas.length) * 100) : 0;
   const pistaUsadaCount = respuestasUsuario.filter(r => r.usoPista).length;
-  const puntajeMaximoPosible = preguntas.length * PUNTUACION_BASE;
+  const puntajeMaximoPosible = preguntas.length * (PUNTUACION_BASE + 50);
 
   if (loading) {
     return (
@@ -399,7 +445,7 @@ const JuegoSolo = () => {
                 <div className="icono-circulo-azul">
                   <FaClock className="icono-reloj" />
                 </div>
-                <div className="icono-numero">{(preguntas.length - respuestasCorrectas - respuestasIncorrectas)}</div>
+                <div className="icono-numero">{respuestasTiempo}</div>
                 <div className="icono-label">Tiempo</div>
               </div>
             </div>

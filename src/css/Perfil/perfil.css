@@ -91,45 +91,11 @@
   color: #333;
 }
 
-.perfil-input-nombre {
-  width: 85%;
-  margin: 0 auto 10px;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  font-size: 14px;
-  text-align: center;
-  background: white;
-  color: #333;
-}
-
-.perfil-input-nombre:focus {
-  outline: none;
-  border-color: #129d3c;
-}
-
 .perfil-email {
   font-size: 13px;
   color: #666;
   margin: 5px 0 0 0;
   word-break: break-all;
-}
-
-.perfil-input-email {
-  width: 85%;
-  margin: 8px auto 0;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  font-size: 13px;
-  text-align: center;
-  background: white;
-  color: #333;
-}
-
-.perfil-input-email:focus {
-  outline: none;
-  border-color: #129d3c;
 }
 
 /* Mensajes de error y éxito */
@@ -210,58 +176,6 @@
 .opcion-desc {
   font-size: 11px;
   color: #999;
-}
-
-.perfil-editar-opciones {
-  padding: 20px;
-  flex-shrink: 0;
-}
-
-/* Botones de guardar/cancelar */
-.perfil-buttons {
-  display: flex;
-  gap: 10px;
-  margin-top: 0;
-}
-
-.btn-guardar, .btn-cancelar {
-  flex: 1;
-  padding: 10px;
-  border: none;
-  border-radius: 8px;
-  font-size: 13px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-
-.btn-guardar {
-  background: #2ed573;
-  color: white;
-}
-
-.btn-guardar:hover:not(:disabled) {
-  background: #26b865;
-  transform: translateY(-1px);
-}
-
-.btn-guardar:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.btn-cancelar {
-  background: #ff6b6b;
-  color: white;
-}
-
-.btn-cancelar:hover {
-  background: #ff5252;
-  transform: translateY(-1px);
 }
 
 /* Espaciador que empuja hacia abajo */

@@ -186,5 +186,68 @@ export const UserModel = {
     
     if (error) throw error
     return data[0]
+  },
+
+  // Actualizar estadísticas del modo solo
+  async updateEstadisticasSolo(id, puntaje) {
+    try {
+      // Obtener el usuario actual
+      const { data: user, error: getUserError } = await supabase
+        .from('users')
+        .select('puntaje_total, partidas_jugadas, partidas_solo, puntaje_solo, mejor_puntaje_solo')
+        .eq('id', id)
+        .single()
+      
+      if (getUserError) throw getUserError
+      
+      // Calcular nuevos valores
+      const nuevoPuntajeTotal = (user?.puntaje_total || 0) + puntaje
+      const nuevasPartidasJugadas = (user?.partidas_jugadas || 0) + 1
+      const nuevasPartidasSolo = (user?.partidas_solo || 0) + 1
+      const nuevoPuntajeSolo = (user?.puntaje_solo || 0) + puntaje
+      
+      // Actualizar mejor puntaje si es mayor
+      let nuevoMejorPuntajeSolo = user?.mejor_puntaje_solo || 0
+      if (puntaje > nuevoMejorPuntajeSolo) {
+        nuevoMejorPuntajeSolo = puntaje
+      }
+      
+      const updates = {
+        puntaje_total: nuevoPuntajeTotal,
+        partidas_jugadas: nuevasPartidasJugadas,
+        partidas_solo: nuevasPartidasSolo,
+        puntaje_solo: nuevoPuntajeSolo,
+        mejor_puntaje_solo: nuevoMejorPuntajeSolo
+      }
+      
+      const { data, error } = await supabase
+        .from('users')
+        .update(updates)
+        .eq('id', id)
+        .select('id, name, email, rol, puntaje_total, partidas_jugadas, partidas_ganadas, partidas_solo, puntaje_solo, mejor_puntaje_solo, created_at')
+      
+      if (error) throw error
+      return data[0]
+    } catch (error) {
+      console.error('Error al actualizar estadísticas del modo solo:', error)
+      throw error
+    }
+  },
+
+  // Obtener estadísticas del modo solo
+  async getEstadisticasSolo(id) {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('partidas_solo, puntaje_solo, mejor_puntaje_solo')
+        .eq('id', id)
+        .single()
+      
+      if (error) throw error
+      return data
+    } catch (error) {
+      console.error('Error al obtener estadísticas del modo solo:', error)
+      throw error
+    }
   }
 }
