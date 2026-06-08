@@ -30,8 +30,7 @@ const Inicio = () => {
   };
 
   const handleMultijugadorClick = () => {
-    // Por ahora mostrar alerta, luego se conecta con el multijugador
-    alert('Próximamente disponible');
+    navigate('/multijugador');
   };
 
   const handlePerfilClick = () => {

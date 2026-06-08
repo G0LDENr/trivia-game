@@ -8,6 +8,9 @@ import Registro from './components/Login/register';
 import Perfil from './components/Perfil/perfil';
 import JuegoSolo from './components/Juegos/juego-solo';
 import Config from './components/Configuracion/configuracion';
+import SalaMultijugador from './components/Multijugador/sala-multijugador';
+import SalaEspera from './components/Multijugador/salas';
+import JuegoMultijugador from './components/Juegos/juego-multijugador';
 
 function Main() {
     return (
@@ -21,6 +24,9 @@ function Main() {
                 <Route path="/perfil" element={<Perfil />} />
                 <Route path="/juego-solo" element={<JuegoSolo />} />
                 <Route path="/configuracion" element={<Config />} />
+                <Route path="/multijugador" element={<SalaMultijugador />} />
+                <Route path="/multijugador/sala/:codigo" element={<SalaEspera />} />
+                <Route path="/multijugador/juego/:codigo" element={<JuegoMultijugador />} />
             </Routes>
         </Router>
     );

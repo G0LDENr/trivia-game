@@ -1,0 +1,1270 @@
+/* sala-multijugador.css - Estilos para el modo multijugador */
+
+/* Contenedor principal */
+.multijugador-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+}
+
+/* Fondo */
+@media (min-width: 768px) {
+  .multijugador-container {
+    background-image: url('../../img/Fondo.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+}
+
+@media (max-width: 767px) {
+  .multijugador-container {
+    background-image: url('../../img/Fondo-movil.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
+
+/* ============================================ */
+/* BOTÓN VOLVER - SIN CÍRCULO, MÁS GRANDE */
+/* ============================================ */
+
+.btn-volver-multi, .btn-volver-sala {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 2rem;
+  color: #1da74a;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.btn-volver-multi:hover, .btn-volver-sala:hover {
+  transform: translateX(-3px);
+  color: #1da74a;
+}
+
+/* ============================================ */
+/* CONTENIDO PRINCIPAL */
+/* ============================================ */
+
+.multijugador-content {
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.multijugador-titulo {
+  font-size: 3rem;
+  font-weight: 1000;
+  color: #16a34a;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.multijugador-subtitulo {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+/* ============================================ */
+/* MENSAJES DE ERROR */
+/* ============================================ */
+
+.error-message {
+  background: #f8d7da;
+  color: #f44336;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ============================================ */
+/* OPCIONES MULTIJUGADOR */
+/* ============================================ */
+
+.opciones-multijugador {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  align-items: center;
+}
+
+.btn-crear-sala, .btn-unirse-sala {
+  background: white;
+  border: 2px solid #1c68f1;
+  border-radius: 15px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  color: #1c68f1;
+  width: 100%;
+}
+
+.btn-crear-sala:hover, .btn-unirse-sala:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  background: #f0f8ff;
+}
+
+/* ============================================ */
+/* FORMULARIOS - CENTRADOS */
+/* ============================================ */
+
+.form-crear-sala, .form-unirse-sala {
+  background: white;
+  border-radius: 20px;
+  padding: 1.5rem;
+  animation: fadeIn 0.3s ease;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-crear-sala h3, .form-unirse-sala h3 {
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1.2rem;
+  text-align: center;
+  width: 100%;
+}
+
+.form-crear-sala input, .form-unirse-sala input {
+  width: 100%;
+  max-width: 300px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.form-crear-sala input:focus, .form-unirse-sala input:focus {
+  outline: none;
+  border-color: #1c68f1;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  max-width: 300px;
+  justify-content: center;
+}
+
+.btn-cancelar, .btn-confirmar {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-cancelar {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.btn-cancelar:hover {
+  background: #e0e0e0;
+}
+
+.btn-confirmar {
+  background: #1da74a;
+  color: white;
+}
+
+.btn-confirmar:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(29, 167, 74, 0.3);
+}
+
+.btn-confirmar:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ============================================ */
+/* SALA DE ESPERA - CENTRADA */
+/* ============================================ */
+
+.sala-container {
+  background: white;
+  border-radius: 25px;
+  padding: 2rem;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: slideUp 0.5s ease;
+  text-align: center;
+}
+
+.sala-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.sala-titulo {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.sala-codigo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #f5f5f5;
+  padding: 8px 16px;
+  border-radius: 30px;
+  display: inline-flex;
+  margin: 0 auto;
+}
+
+.sala-codigo span {
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.sala-codigo strong {
+  font-size: 1.2rem;
+  color: #1c68f1;
+  letter-spacing: 2px;
+}
+
+.btn-copiar {
+  background: #1c68f1;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.7rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-copiar:hover {
+  background: #0e4bb3;
+  transform: scale(1.02);
+}
+
+/* ============================================ */
+/* LISTA DE JUGADORES */
+/* ============================================ */
+
+.sala-jugadores h3 {
+  margin-bottom: 1rem;
+  color: #333;
+  font-size: 1rem;
+  text-align: center;
+}
+
+.lista-jugadores {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.jugador-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.jugador-card.listo {
+  background: #e8f5e9;
+  border-left: 4px solid #1da74a;
+}
+
+.jugador-avatar {
+  width: 40px;
+  height: 40px;
+  background: #e2f2e5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1da74a;
+  font-size: 1.2rem;
+}
+
+.jugador-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.jugador-nombre {
+  font-weight: 600;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.badge-creador {
+  background: #ffd700;
+  color: #333;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.badge-listo {
+  background: #1da74a;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.65rem;
+}
+
+/* ============================================ */
+/* ACCIONES DE LA SALA */
+/* ============================================ */
+
+.sala-acciones {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.btn-listo {
+  background: #1da74a;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-listo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(29, 167, 74, 0.3);
+}
+
+.btn-iniciar {
+  background: #1c68f1;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-iniciar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(28, 104, 241, 0.3);
+}
+
+.esperando-texto {
+  color: #999;
+  font-size: 0.85rem;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+/* ============================================ */
+/* JUEGO MULTIJUGADOR */
+/* ============================================ */
+
+.juego-multijugador-content {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-superior {
+  margin-bottom: 1rem;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  animation: moverLogo 2s ease-in-out infinite;
+}
+
+.logo-superior img {
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+}
+
+.inicio-title {
+  font-size: 3rem;
+  font-weight: 1000;
+  color: #16a34a;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* ============================================ */
+/* PUNTAJES EN VIVO */
+/* ============================================ */
+
+.puntajes-vivo {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.puntaje-propio {
+  background: white;
+  border-radius: 12px;
+  padding: 10px 15px;
+  flex: 1;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid #1da74a;
+}
+
+.puntaje-oponente {
+  background: white;
+  border-radius: 12px;
+  padding: 10px 15px;
+  flex: 1;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+.puntaje-vivo-nombre {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.puntaje-vivo-puntos {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #1da74a;
+}
+
+.puntaje-vivo-progreso {
+  display: block;
+  font-size: 0.7rem;
+  color: #999;
+}
+
+/* ============================================ */
+/* PROGRESO */
+/* ============================================ */
+
+.progreso-container {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.progreso-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.pregunta-label {
+  color: #1da74a;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.barra-progreso {
+  width: 100%;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.barra-progreso-lleno {
+  height: 100%;
+  background: linear-gradient(90deg, #1da74a, #58bc74);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+/* ============================================ */
+/* TEMPORIZADOR */
+/* ============================================ */
+
+.temporizador-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 15px;
+  padding: 12px 20px;
+  margin-bottom: 1rem;
+  width: 90%;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.temporizador-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.temporizador-icono {
+  font-size: 1.2rem;
+  color: #1c68f1;
+}
+
+.temporizador-label {
+  font-size: 0.85rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.temporizador-barra {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.temporizador-barra-lleno {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 1s linear;
+}
+
+.temporizador-tiempo {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+/* ============================================ */
+/* PREGUNTA */
+/* ============================================ */
+
+.pregunta-cuadro {
+  background: white;
+  border-radius: 20px;
+  padding: 1.5rem;
+  width: 90%;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.pregunta-cuadro.espera {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.pregunta-texto {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ============================================ */
+/* RESPUESTAS */
+/* ============================================ */
+
+.respuestas-container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.respuesta-boton {
+  background: white;
+  border: 1px solid #1c68f1;
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-weight: 500;
+}
+
+.respuesta-letra {
+  font-weight: bold;
+  color: #1c68f1;
+  font-size: 1rem;
+  min-width: 30px;
+}
+
+.respuesta-boton:hover:not(:disabled) {
+  transform: translateX(5px);
+  border-color: #1da74a;
+  background: #f0fdf4;
+}
+
+.respuesta-boton:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.respuesta-correcta {
+  background: #d4edda !important;
+  border-color: #1da74a !important;
+}
+
+.respuesta-incorrecta {
+  background: #f8d7da !important;
+  border-color: #f44336 !important;
+}
+
+/* ============================================ */
+/* FEEDBACK */
+/* ============================================ */
+
+.respuesta-feedback {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.feedback-correcto {
+  background: #d4edda;
+  color: #1da74a;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.feedback-incorrecto {
+  background: #f8d7da;
+  color: #f44336;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.tiempo-agotado-mensaje {
+  text-align: center;
+  padding: 12px 20px;
+  margin-top: 1rem;
+  background: rgba(28, 104, 241, 0.15);
+  border-radius: 10px;
+  color: #1c68f1;
+  font-weight: bold;
+  width: 100%;
+}
+
+/* ============================================ */
+/* RESULTADOS */
+/* ============================================ */
+
+.resultados-container-multi {
+  background: white;
+  border-radius: 25px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 93%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.resultados-titulo-multi {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1da74a;
+  margin-bottom: 1rem;
+}
+
+.ganador-mensaje {
+  background: #e8f5e9;
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.ganador-icono {
+  font-size: 3rem;
+  color: #1da74a;
+  margin-bottom: 0.5rem;
+}
+
+.ganador-mensaje p {
+  color: rgb(0, 0, 0);
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.perdedor-mensaje {
+  background: #f5f5f5;
+  border-radius: 20px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.puntajes-finales {
+  margin-bottom: 1.5rem;
+}
+
+.puntajes-finales h3 {
+  color: #1da74a;
+  margin-bottom: 1rem;
+}
+
+.puntaje-final-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  background: #f5f5f5;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.puntaje-final-item.ganador {
+  background: #e8f5e9;
+  border-left: 4px solid #1da74a;
+}
+
+.puntaje-final-avatar {
+  width: 40px;
+  height: 40px;
+  background: #e2f2e5;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1da74a;
+  font-size: 1.2rem;
+}
+
+.puntaje-final-info {
+  flex: 1;
+  text-align: left;
+}
+
+.puntaje-final-nombre {
+  display: block;
+  font-weight: 600;
+  color: #333;
+}
+
+.puntaje-final-puntos {
+  display: block;
+  font-size: 0.9rem;
+  color: #1da74a;
+  font-weight: bold;
+}
+
+.puntaje-final-aciertos {
+  display: block;
+  font-size: 0.7rem;
+  color: #999;
+}
+
+.puntaje-final-trophy {
+  font-size: 1.5rem;
+  color: #ffd700;
+}
+
+/* ============================================ */
+/* BOTONES RESULTADOS */
+/* ============================================ */
+
+.botones-resultados-multi {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.btn-volver-inicio {
+  background: #1c68f1;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-volver-inicio:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(28, 104, 241, 0.3);
+}
+
+/* ============================================ */
+/* LOADING */
+/* ============================================ */
+
+.loading-spinner {
+  text-align: center;
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+}
+
+.loading-spinner p {
+  color: #333;
+  font-size: 1rem;
+}
+
+/* Feedback de respuestas */
+.respuesta-feedback {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 12px;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 600;
+  animation: fadeIn 0.3s ease;
+}
+
+.respuesta-feedback.correcto {
+  background: #d4edda;
+  color: #1da74a;
+}
+
+.respuesta-feedback.incorrecto {
+  background: #f8d7da;
+  color: #f44336;
+}
+
+.respuesta-feedback.tiempo {
+  background: #fff3cd;
+  color: #ff9800;
+}
+
+.respuesta-feedback p {
+  margin: 0;
+}
+
+/* Asegurar que las respuestas se limpien entre preguntas */
+.respuesta-boton {
+  background: white;
+  border: 1px solid #1c68f1;
+  border-radius: 12px;
+  padding: 0.8rem 1rem;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-weight: 500;
+}
+
+.respuesta-boton.respuesta-correcta {
+  background: #d4edda !important;
+  border-color: #1da74a !important;
+}
+
+.respuesta-boton.respuesta-incorrecta {
+  background: #f8d7da !important;
+  border-color: #f44336 !important;
+}
+
+.respuesta-boton:disabled {
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+/* Feedback */
+.respuesta-feedback {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 12px;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 600;
+  animation: fadeIn 0.3s ease;
+}
+
+.respuesta-feedback.correcto {
+  background: #d4edda;
+  color: #1da74a;
+}
+
+.respuesta-feedback.incorrecto {
+  background: #f8d7da;
+  color: #f44336;
+}
+
+.respuesta-feedback.tiempo {
+  background: #fff3cd;
+  color: #ff9800;
+}
+
+.respuesta-feedback p {
+  margin: 0;
+}
+
+/* Pantalla de espera cuando el jugador termina */
+.esperando-container {
+  background: white;
+  border-radius: 25px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.5s ease;
+}
+
+.esperando-container h2 {
+  color: #1da74a;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.esperando-container p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.spinner-grande {
+  font-size: 3rem;
+  color: #1c68f1;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.oponentes-estado {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.oponente-espera {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  background: #f5f5f5;
+  border-radius: 10px;
+}
+
+.oponente-espera svg {
+  color: #1c68f1;
+  font-size: 1.2rem;
+}
+
+.oponente-espera span:first-of-type {
+  flex: 1;
+  font-weight: 500;
+  color: #333;
+}
+
+.completado-badge {
+  background: #d4edda;
+  color: #1da74a;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.esperando-badge {
+  background: #fff3cd;
+  color: #ff9800;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* Ajustes de puntajes */
+.puntaje-propio, .puntaje-oponente {
+  background: white;
+  border-radius: 12px;
+  padding: 8px 12px;
+  flex: 1;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.puntaje-propio {
+  border: 2px solid #1da74a;
+}
+
+.puntaje-oponente {
+  border: 1px solid #e0e0e0;
+}
+
+.puntaje-vivo-puntos {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #1da74a;
+}
+
+.puntaje-vivo-progreso {
+  display: block;
+  font-size: 0.65rem;
+  color: #999;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============================================ */
+/* ANIMACIONES */
+/* ============================================ */
+
+@keyframes moverLogo {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================ */
+/* RESPONSIVE */
+/* ============================================ */
+
+/* Tablets */
+@media (max-width: 768px) {
+  .multijugador-container {
+    padding: 1.5rem;
+  }
+  
+  .multijugador-titulo {
+    font-size: 2.5rem;
+  }
+  
+  .inicio-title {
+    font-size: 2rem;
+  }
+  
+  .pregunta-texto {
+    font-size: 1.1rem;
+  }
+  
+  .respuestas-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .btn-volver-multi, .btn-volver-sala {
+    font-size: 1.6rem;
+    top: 15px;
+    left: 15px;
+  }
+  
+  .sala-container {
+    padding: 1.5rem;
+  }
+}
+
+/* Móviles */
+@media (max-width: 550px) {
+  .multijugador-container {
+    padding: 1rem;
+  }
+  
+  .multijugador-titulo {
+    font-size: 2rem;
+  }
+  
+  .inicio-title {
+    font-size: 1.8rem;
+  }
+  
+  .multijugador-subtitulo {
+    font-size: 0.85rem;
+  }
+  
+  .sala-container {
+    padding: 1rem;
+  }
+  
+  .sala-titulo {
+    font-size: 1.2rem;
+  }
+  
+  .sala-codigo {
+    padding: 6px 12px;
+  }
+  
+  .sala-codigo strong {
+    font-size: 1rem;
+  }
+  
+  .puntajes-vivo {
+    flex-direction: column;
+  }
+  
+  .resultados-container-multi {
+    padding: 1rem;
+  }
+  
+  .resultados-titulo-multi {
+    font-size: 1.5rem;
+  }
+  
+  .ganador-mensaje p {
+    font-size: 1rem;
+  }
+  
+  .ganador-icono {
+    font-size: 2rem;
+  }
+  
+  .btn-volver-multi, .btn-volver-sala {
+    font-size: 1.4rem;
+    top: 10px;
+    left: 10px;
+  }
+  
+  .form-crear-sala input, .form-unirse-sala input {
+    max-width: 100%;
+  }
+}
+
+/* Móviles muy pequeños */
+@media (max-width: 420px) {
+  .multijugador-titulo {
+    font-size: 1.8rem;
+  }
+  
+  .inicio-title {
+    font-size: 1.5rem;
+  }
+  
+  .sala-container {
+    padding: 0.8rem;
+  }
+  
+  .sala-header {
+    margin-bottom: 1rem;
+  }
+  
+  .sala-titulo {
+    font-size: 1rem;
+  }
+  
+  .sala-codigo span {
+    font-size: 0.75rem;
+  }
+  
+  .sala-codigo strong {
+    font-size: 0.9rem;
+  }
+  
+  .btn-crear-sala, .btn-unirse-sala {
+    padding: 0.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .jugador-avatar {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+  
+  .jugador-nombre {
+    font-size: 0.8rem;
+  }
+  
+  .puntaje-final-item {
+    flex-wrap: wrap;
+  }
+  
+  .puntaje-final-info {
+    text-align: center;
+  }
+}
